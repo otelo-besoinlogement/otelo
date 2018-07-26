@@ -1,0 +1,26 @@
+<!-- barre de validation -->
+<div class="row">
+	<div class="col-sm-12">
+	
+	<div class="col-sm-6 text-right">
+	<button type="submit" class="btn btn-info" id="save_all" name="save_all" alt="Enregistrer toutes les modifications" title="Enregistrer toutes les modifications">
+		<i class="fa fa-floppy-o fa-3x" aria-hidden="true"></i>
+	</button>
+	</div>
+	<div class="col-sm-6 text-left">	
+	<form method="post" class="form-inline">
+	{% csrf_token %}
+	<a href="{% url 'outil:synthese_ze' %}" role="button" class="btn btn-info" alt="Accéder à la synthèse des résultats" title="Accéder à la synthèse des résultats">
+		<i class="fa fa-calculator fa-3x" aria-hidden="true"></i>
+	</a>
+	 
+	<button type="submit" class="btn btn-info" id="next" name="next" alt="Passer à l'étape suivante" title="Passer à l'étape suivante">
+		<i class="fa fa-arrow-circle-right fa-3x" aria-hidden="true"></i>
+	</button>	
+	</form>
+	</div>
+			
+	</div>
+</div>
+
+<div style="margin:15px;"></div>

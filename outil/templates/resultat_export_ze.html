@@ -1,0 +1,56 @@
+{% extends 'principal.html' %}
+{% load humanize %}
+{% load formatnum_extras %}
+{% block body %}
+
+
+<div class="page-header">
+		<h1><i class="fa fa-calculator" aria-hidden="true"></i> Résultat sur plusieurs zones d'emploi <small>Export CSV</small></h1>
+</div>
+
+<div class="panel panel-info">
+  		<div class="panel-heading">Préambule</div>
+  		<div class="panel-body">
+  		<p>Les fichiers d'export sont au format csv, encodés en 'UTF-8'. Pour un affichage correct des données exportées (notamment les noms
+  		accentués), il convient de spécifier cette encodage dans votre outil de visualisation du fichier.</p>
+		</div>
+</div>
+
+<div class="panel panel-primary">
+	<div class="panel-heading">Choix des zones d'emploi à exporter</div>  		
+	<div class="panel-body">  				
+		<form class="form-horizontal" method="post">
+		{% csrf_token %}
+			<div class="col-sm-10">
+				<select class="form-control selectpicker" multiple name="zone_emploi">
+					<option value="0000">Sélectionnez les zones d'emploi...</option>
+				{% for parametre in parametres %}					  
+				  	<option value="{{parametre.code_ze}}"{% if parametre.code_ze in codes_zone %} selected{% endif %}>{{parametre.code_ze}} - {{parametre.nom_ze}}</option>
+				{% endfor %}
+				</select>
+			</div>
+			<div class="col-sm-2">
+				<button type="submit" class="btn btn-primary" name="afficher" alt="Export CSV" title="Export CSV">
+					<i class="fa fa-file-text-o" aria-hidden="true"></i>
+				</button>
+				&nbsp;&nbsp;&nbsp;&nbsp;
+				<button class="btn btn-primary" id="selectionner" alt="Sélectionner tout" title="Sélectionner tout">
+					<i class="fa fa-check" aria-hidden="true"></i>
+				</button>
+				<button class="btn btn-primary" id="deselectionner" alt="Déselectionner tout" title="Déselectionner tout">
+					<i class="fa fa-times" aria-hidden="true"></i>
+				</button>
+			</div>
+		</form>	
+	</div>
+	</div>
+	
+{% endblock %}
+
+{% block javascript %}
+<script type="text/javascript">
+	
+{% include 'js_gestion_deselect_select.html' %}
+	
+</script>
+{% endblock %}

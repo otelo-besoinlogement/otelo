@@ -1,0 +1,203 @@
+{% extends 'principal.html' %}
+{% block body %}
+
+	<div class="page-header">
+  		<h1><i class="fa fa-cubes" aria-hidden="true"></i> Ménages dans des logements de mauvaise qualité<small> Brique 1.4</small></h1>
+	</div>
+	
+	<div class="panel panel-info">
+  		<div class="panel-heading">Préambule</div>
+  		<div class="panel-body"  align="justify">
+  			<p>Les ménages dans des logements de mauvaise qualité sont repérés au sein du parc privé en fonction de la norme de qualité du logement fixée par l’évaluateur. 
+  			La qualité du logement peut s’apprécier selon la présence d’éléments de confort dans le logement et/ou par la qualité du bâti.</p>
+  			<p><u>Précision méthodologique : </u></p>
+  			<p>Au sens de la méthodologie, seuls les ménages locataires du parc privé sont en situation de besoin en logements. Les propriétaires occupants résidant dans un logement de mauvaise qualité génèrent un besoin en réhabilitation, 
+  			décompté à part des besoins en production de logements.</p>
+  			<p><u>Précision méthodologique sur les sources : </u></p>
+  			<p>Les sources souffrent de biais différents : le Recensement fournit une information actualisée mais parcellaire (seul l’équipement sanitaire du logement y est décrit) tandis que les bases fiscales couvrent plusieurs 
+  			aspects de la qualité du logement mais souffrent d’une mauvaise actualisation.</p>
+  			<p>A définition quasi constante, le choix de la source utilisée impacte de manière importante les volumes de cette brique :</p>
+			<p>
+			<div class="row">
+			<div class="col-sm-8">
+			<table class="table table-bordered">
+			<thead>
+				<tr><th colspan=2 class="text-center">France métropolitaine, parc locatif privé</th><th class="text-center">Nbre de logements</th></tr></thead>
+			<tbody>
+				<tr><td>Recensement 2014</td><td>Ni baignoire, ni douche</td><td class="text-right">30 000</td></tr>
+				<tr><td>Fichiers Fonciers 2015</td><td>Sans salle de bain</td><td class="text-right">500 000</td></tr>
+				<tr><td>Filocom 2015</td><td>Ni WC, ni douche, ni baignoire</td><td class="text-right">275 000</td></tr>
+				<tr><td>Filocom 2015</td><td>PPPI noyau dur</td><td class="text-right">77 000</td></tr>
+			</tbody>
+			</table>
+			</div>
+			</div>
+			</p>
+		</div>
+	</div>
+	
+	{% if message_erreur %}
+	<div class="panel panel-danger">
+  		<div class="panel-heading">Erreur</div>
+  		<div class="panel-body">			
+			<p class="bg-danger">{{message_erreur}}</p>		
+		</div>
+	</div>
+	{% endif %}
+
+<div class="panel panel-default">
+	<div class="panel-body">
+  		
+			<div class="lead text-primary">
+  				<h3><i class="fa fa-cogs" aria-hidden="true"></i> Mauvaise Qualité</h3>
+			</div>
+
+	<div class="panel panel-primary">
+  		<div class="panel-heading">Choix de la source de données et des critères retenus</div>  		
+  		<div class="panel-body">
+  			
+	<form class="form-horizontal" method="post">
+	{% csrf_token %} 
+	
+	<div class="form-group">
+	  <label class="radio-inline col-sm-11 col-sm-offset-1">
+	   <input type="radio" name="choix-qualite-mono-multi" value="multi" {% if multi %} checked="checked"{% endif %}> Appliquer un choix à toutes les zones d'emploi
+	  </label>		 	  
+	 </div>	  	
+	
+	<div class="form-group multi-qualite-ze">			  
+	    <label for="inputEmail3" class="col-sm-3 control-label">Toutes zones d'emploi</label>
+	    <div class="col-sm-9">
+		   <select class="selectpicker" name="selecteur-multi" multiple>
+			  <optgroup label="Sources" data-max-options="1">
+			    <option value="RP" {% if parametres.0.source_b14 == 'RP' %}selected{% endif %}>Recensement</option>
+			    <option value="FF" {% if parametres.0.source_b14 == 'FF' %}selected{% endif %}>Fichiers fonciers</option>
+			    <option value="PPPI" {% if parametres.0.source_b14 == 'PPPI' %}selected{% endif %}>Filocom (PPPI noyau dur)</option>
+			  </optgroup>
+			  <optgroup label="Catégories" class="categorie">
+			    <option value='prop' {% if parametres.0.b14_proprietaire %}selected{% endif %} disabled="disabled">Propriétaires : besoin en réhabilitation</option>
+			    <option value='locnonhlm' {% if parametres.0.b14_locataire_hors_hlm %}selected{% endif %}>Locataires hors HLM</option>
+			  </optgroup>
+			  {% if parametres.0.source_b14 == 'RP' %}
+			  <optgroup label="Confort" class="confort" data-max-options="1">
+			    <option value="sani" {% if parametres.0.b14_rp_abs_sani %}selected{% endif %}>Absence Sanitaire</option>
+			    <option value="sani_chauf" {% if parametres.0.b14_rp_abs_sani_chauf %}selected{% endif %}>Absence Sanitaire et Chauffage non standard</option>			    
+			  </optgroup>
+			  {% elif parametres.0.source_b14 == 'FF' %}
+			  <optgroup label="Confort" class="confort" data-max-options="1">
+				    <option value="wc" {% if parametres.0.b14_ff_abs_wc and not parametres.0.b14_ff_abs_chauf and not parametres.0.b14_ff_abs_sdb %}selected{% endif %}>Absence WC</option>
+				    <option value="chauf" {% if not parametres.0.b14_ff_abs_wc and parametres.0.b14_ff_abs_chauf and not parametres.0.b14_ff_abs_sdb %}selected{% endif %}>Absence Chauffage central</option>
+				    <option  value="sdb" {% if not parametres.0.b14_ff_abs_wc and not parametres.0.b14_ff_abs_chauf and parametres.0.b14_ff_abs_sdb %}selected{% endif %}>Absence Salle de bain</option>
+				    <option value="wc_chauf" {% if parametres.0.b14_ff_abs_wc and parametres.0.b14_ff_abs_chauf and not parametres.0.b14_ff_abs_sdb %}selected{% endif %}>Absence WC et Chauffage central</option>
+				    <option value="wc_sdb" {% if parametres.0.b14_ff_abs_wc and not parametres.0.b14_ff_abs_chauf and parametres.0.b14_ff_abs_sdb %}selected{% endif %}>Absence WC et Salle de bain</option>
+				    <option value="sdb_chauf" {% if not parametres.0.b14_ff_abs_wc and parametres.0.b14_ff_abs_chauf and parametres.0.b14_ff_abs_sdb %}selected{% endif %}>Absence Salle de bain et Chauffage central</option>
+				    <option value="wc_sdb_chauf" {% if parametres.0.b14_ff_abs_wc and parametres.0.b14_ff_abs_chauf and parametres.0.b14_ff_abs_sdb %}selected{% endif %}>Absence WC, Salle de bain et Chauffage central</option>
+			  </optgroup>
+			  <optgroup label="Qualité du bâti" class="qualibat" data-max-options="1">
+			  		<option value="ss_ent_mv_quali" {% if parametres.0.b14_ff_quali_ssent_mv %}selected{% endif %}>Sans entretien et de mauvaise qualité</option>
+			  		<option value="ss_ent" {% if parametres.0.b14_ff_quali_ssent %}selected{% endif %}>Sans entretien</option>
+			  		<option value="tout" {% if parametres.0.b14_ff_quali_tt %}selected{% endif %}>Indifférent</option>
+			  </optgroup>
+			  {% elif parametres.0.source_b14 == 'PPPI' %}
+			  <optgroup label="Confort" class="confort" data-max-options="1">
+			  </optgroup>
+			  {% endif %}		  
+			</select>
+	    </div>
+	  </div>
+	  
+	 <div class="form-group">
+	  <label class="radio-inline col-sm-11 col-sm-offset-1">
+	   <input type="radio" name="choix-qualite-mono-multi" value="mono" {% if not multi %} checked="checked"{% endif %}> Appliquer un choix par zone d'emploi
+	  </label>		 	  
+	 </div>
+	 
+	 {% for parametre in parametres %}
+	  <div class="form-group mono-qualite-ze">			  
+	    <label for="inputEmail3" class="col-sm-3 control-label">{{parametre.nom_ze}} ({{parametre.code_ze}})</label>
+	    <div class="col-sm-9">
+		    <select class="selectpicker" name="selecteur-mono{{parametre.code_ze}}" multiple>
+			  <optgroup label="Sources" data-max-options="1">
+			    <option value="RP" {% if parametre.source_b14 == 'RP' %}selected{% endif %}>Recensement</option>
+			    <option value="FF" {% if parametre.source_b14 == 'FF' %}selected{% endif %}>Fichiers fonciers</option>
+			    <option value="PPPI" {% if parametre.source_b14 == 'PPPI' %}selected{% endif %}>Filocom (PPPI noyau dur)</option>
+			  </optgroup>
+			  <optgroup label="Catégories" class="categorie">
+			  	<option value='prop' {% if parametres.0.b14_proprietaire %}selected{% endif %} disabled="disabled">Propriétaires : besoin en réhabilitation</option>
+			    
+			    <option value='locnonhlm' {% if parametre.b14_locataire_hors_hlm %}selected{% endif %}>Locataires hors HLM</option>
+			  </optgroup>
+			  {% if parametre.source_b14 == 'RP' %}
+			  <optgroup label="Confort" class="confort" data-max-options="1">
+			    <option value="sani" {% if parametre.b14_rp_abs_sani %}selected{% endif %}>Absence Sanitaire</option>
+			    <option value="sani_chauf" {% if parametre.b14_rp_abs_sani_chauf %}selected{% endif %}>Absence Sanitaire et Chauffage non standard</option>			    
+			  </optgroup>
+			  {% elif parametre.source_b14 == 'FF' %}
+			  <optgroup label="Confort" class="confort" data-max-options="1">
+				    <option value="wc" {% if parametre.b14_ff_abs_wc and not parametre.b14_ff_abs_chauf and not parametre.b14_ff_abs_sdb %}selected{% endif %}>Absence WC</option>
+				    <option value="chauf" {% if not parametre.b14_ff_abs_wc and parametre.b14_ff_abs_chauf and not parametre.b14_ff_abs_sdb %}selected{% endif %}>Absence Chauffage central</option>
+				    <option  value="sdb" {% if not parametre.b14_ff_abs_wc and not parametre.b14_ff_abs_chauf and parametre.b14_ff_abs_sdb %}selected{% endif %}>Absence Salle de bain</option>
+				    <option value="wc_chauf" {% if parametre.b14_ff_abs_wc and parametre.b14_ff_abs_chauf and not parametre.b14_ff_abs_sdb %}selected{% endif %}>Absence WC et Chauffage central</option>
+				    <option value="wc_sdb" {% if parametre.b14_ff_abs_wc and not parametre.b14_ff_abs_chauf and parametre.b14_ff_abs_sdb %}selected{% endif %}>Absence WC et Salle de bain</option>
+				    <option value="sdb_chauf" {% if not parametre.b14_ff_abs_wc and parametre.b14_ff_abs_chauf and parametre.b14_ff_abs_sdb %}selected{% endif %}>Absence Salle de bain et Chauffage central</option>
+				    <option value="wc_sdb_chauf" {% if parametre.b14_ff_abs_wc and parametre.b14_ff_abs_chauf and parametre.b14_ff_abs_sdb %}selected{% endif %}>Absence WC, Salle de bain et Chauffage central</option>
+			  </optgroup>
+			  <optgroup label="Qualité du bâti" class="qualibat" data-max-options="1">
+			  		<option value="ss_ent_mv_quali" {% if parametre.b14_ff_quali_ssent_mv %}selected{% endif %}>Sans entretien et de mauvaise qualité</option>
+			  		<option value="ss_ent" {% if parametre.b14_ff_quali_ssent %}selected{% endif %}>Sans entretien</option>
+			  		<option value="tout" {% if parametre.b14_ff_quali_tt %}selected{% endif %}>Indifférent</option>
+			  </optgroup>
+			  {% elif parametre.source_b14 == 'PPPI' %}
+			  <optgroup label="Confort" class="confort" data-max-options="1">
+			  </optgroup>
+			  {% endif %}			  
+			</select>
+	    </div>
+	  </div>
+	  {% endfor %}	
+	  
+	  {% include 'validation_form.html' %}
+		
+		</div>
+	</div>
+	
+	</div>
+</div>
+
+<div style="margin:15px;"></div>
+
+{% include 'validation_all_form.html' %}			
+	
+{% endblock %}
+
+{% block javascript %}
+<script type="text/javascript">
+	
+$(function() {
+
+	{% include 'js_gestion_mono_multi.html' with type='qualite' multi=multi %}
+	
+	$('.selectpicker').on('changed.bs.select', function(e, clickedIndex, newValue, oldValue) {
+		if (clickedIndex == 1 && newValue){ 
+			$(this).append('<optgroup label="Qualité du bâti" class="qualibat" data-max-options="1"><option value="ss_ent_mv_quali">Sans entretien et de mauvaise qualité</option><option value="ss_ent">Sans entretien</option><option value="tout" selected>Indifférent</option></optgroup>');
+			$(this).find('.confort').html('<option value="wc">Absence WC</option><option value="chauf">Absence Chauffage central</option><option  value="sdb">Absence Salle de bain</option><option value="wc_chauf">Absence WC et Chauffage central</option><option value="wc_sdb" selected>Absence WC et Salle de bain</option><option value="sdb_chauf">Absence Salle de bain et Chauffage central</option><option value="wc_sdb_chauf">Absence WC, Salle de bain et Chauffage central</option>');
+			$(this).selectpicker('refresh');	
+		}
+		if (clickedIndex == 0 && newValue) {
+			$(this).find('.qualibat').remove();
+			$(this).find('.confort').html('<option value="sani" selected>Absence Sanitaire</option><option value="sani_chauf">Absence Sanitaire et Chauffage non standard</option>');
+			$(this).selectpicker('refresh');
+		}
+		if (clickedIndex == 2 && newValue) {
+			$(this).find('.qualibat').remove();
+			$(this).find('.confort').html('');
+			$(this).selectpicker('refresh');
+		}	
+	});
+	
+	{% include 'js_gestion_forms.html' %}	
+      
+});
+	
+</script>
+{% endblock %}

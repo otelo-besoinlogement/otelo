@@ -1,0 +1,753 @@
+{% extends 'principal.html' %}
+{% load staticfiles %}
+{% load humanize %}
+{% load formatnum_extras %}
+{% block body %}
+
+	<div class="page-header">
+  		<h1><i class="fa fa-calculator" aria-hidden="true"></i> Résultat sur une zone d'emploi <small>Détail</small></h1>
+	</div>
+	
+	<div class="panel panel-primary">
+  		<div class="panel-heading">Choix de la zone d'emploi</div>  		
+  		<div class="panel-body">  				
+  		<form class="form-horizontal" method="post">
+			{% csrf_token %}
+				<div class="col-sm-10">
+					<select class="form-control selectpicker" name="zone_emploi">
+						<option value="0000">Sélectionnez la zone d'emploi...</option>
+					{% for parametre in parametres %}					  
+					  	<option value="{{parametre.code_ze}}">{{parametre.code_ze}} - {{parametre.nom_ze}}</option>
+					{% endfor %}
+					</select>
+				</div>
+				<div class="col-sm-2">
+					<button type="submit" class="btn btn-primary" name="afficher" alt="Afficher les résultats" title="Afficher les résultats">
+						<i class="fa fa-search" aria-hidden="true"></i>
+					</button>
+				</div>
+		</form>	
+		
+		</div>
+  	</div>
+  	
+ 
+
+{% if affichage_resultat %}
+
+	<div class="page-header">
+  		<h2><i class="fa fa-cogs" aria-hidden="true"></i> Récapitulatif du paramètrage sur la zone d'emploi {{resultat.parametres.nom_ze}} ({{code_zone}})</h2>
+	</div>
+
+	<div class="panel panel-primary">
+		<div class="panel-heading">Le détail des paramétrages par brique</div>  		
+		<div class="panel-body">
+		
+		<div class="row">
+				<div class="col-sm-12">
+					<h4>B1 - BESOINS EN STOCK</h4>
+				</div>
+		</div>
+		
+		<div class="row">
+  		<div class="col-sm-12">
+		  		<table class="table table-bordered">
+	  			<thead>  					
+	  					<th></th>
+	  					<th width="40%" class='text-center'></th>
+	  					<th width="15%" class="text-center">Source</th>
+	  					<th class='text-center'>Champs retenus</th>
+	  			</thead>
+	  			<tbody>
+	  				<tr>
+	  					<th rowspan=2>1.1</th>
+	  					<th>Sans abris - Habitations de fortune - Logés à l'hôtel</th>
+	  					<td class='text-right'>{{ resultat.parametres.sources_b11 }}</td>
+	  					<td>{{ resultat.parametres.categories_b11 }}</td>
+	  				</tr>
+	  				
+	  				<tr>
+  						
+  						<th>Hébergement social</th>
+  						<td class='text-right'>FINESS 2016</td>
+  						<td>{{ resultat.parametres.etablissements_b11 }}</td>
+  					</tr>
+  					
+  					<tr>
+						<th rowspan=3>1.2</th>
+						<th>Cohabitation intergénérationnelle présumée subie</th>
+						<td class='text-right'>{% if resultat.parametres.b12_cohab_interg_subie %}Filocom 2015{% else %}---{% endif %}</td>
+						<td>{% if resultat.parametres.b12_cohab_interg_subie %}Prise en compte{% else %}Non prise en compte{% endif %}</td>
+					</tr>
+					
+					<tr>
+						
+						<th>Cohabitation subie (hors cohabitation intergénérationnelle)</th>
+						<td class='text-right'>SNE 2016</td>
+						<td>{{ resultat.parametres.categories_b12 }}</td>
+					</tr>
+					<tr>
+	  					<th colspan=2>Part du besoin en stock affectés au logement social - brique 1.2</th>
+	  					<td class="text-left">{{resultat.parametres.b12_ventilation}} %</td>
+	  					</tr>
+						  					
+					<tr>
+						<th rowspan=2>1.3</th>
+						<th>Inadéquation financière</th>
+						<td class='text-right'>CNAF 2015</td>
+						<td>{{ resultat.parametres.categories_b13 }}</td>
+					</tr>
+					<tr>
+	  					<th colspan=2>Part du besoin en stock affectés au logement social - brique 1.3</th>
+	  					<td class="text-left">{{resultat.parametres.b13_ventilation}} %</td>
+	  					</tr>
+						
+					<tr>
+						<th rowspan=2>1.4</th>
+						<th>Mauvaise qualité</th>
+						<td class='text-right'>{{ resultat.parametres.sources_b14 }}</td>
+						<td>{{ resultat.parametres.champs_b14 }}</td>
+					</tr>
+					<tr>
+						<th colspan=2>Part du besoin en stock affectés au logement social - brique 1.4</th>
+						<td class="text-left">{{resultat.parametres.b14_ventilation}} %</td>
+					</tr>
+						
+					<tr>
+						<th rowspan=2>1.5</th>
+						<th>Inadéquation physique</th>
+						<td class='text-right'>{{ resultat.parametres.sources_b15 }}</td>
+						<td>{{ resultat.parametres.categories_b15_cat }}{{ resultat.parametres.surocc_b15}}</td>
+					</tr>
+					<tr>
+						<th colspan=2>Part du besoin en stock affectés au logement social - brique 1.5</th>
+						<td class="text-left">{{resultat.parametres.b15_ventilation}} %</td>
+					</tr>
+							
+					<tr>
+						<th>1.7</th>
+						<th>Demandes du parc social</th>
+						<td class='text-right'>SNE 2016</td>
+						<td>{{ resultat.parametres.categories_b17 }}</td>
+					</tr>
+					<tr>
+						<th colspan=3>Part de logements des ménages en inadéquation (briques 1.3 et 1.5) réallouables à d'autres ménages</th>
+						<td class="text-left">{{resultat.parametres.b1_taux_mobilite}} %</td>
+					</tr>	
+					<tr>
+						<th colspan=3>Horizon de résorption des besoins en stock</th>
+						<td class="text-left">{{resultat.parametres.horizon_resorption}} ans</td>
+					</tr>	
+	  			</tbody>
+			</table>
+			</div>
+			</div>
+			
+			<div class="row">
+				<div class="col-sm-12">
+					<h4>B2 - BESOINS EN FLUX</h4>
+				</div>
+			</div>
+			<div class="row">
+  			<div class="col-sm-12">
+			<table class="table table-bordered">
+	  			<thead>  					
+	  					<th width="50%"></th>
+	  					<th class="text-right">Valeur retenue</th>
+	  					<th class="text-right">Valeur observée</th>
+	  			</thead>
+	  			<tbody>
+	  					<tr>
+	  						<th>2.1 Evolution démographique </th>
+	  						<td class="text-right">{{resultat.parametres.scenario_evolution_retenu}}</td>
+	  						<td class="text-right"><br></td>
+	  					</tr>
+	  					<tr>
+	  						<th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Nouveaux ménages attendus</th>
+	  						<td class="text-right">{{resultat.menages_suppl|intcomma}}</td>
+	  						<td class="text-right">{{resultat.evolution_menage|intcomma}} (RP 2008-2014)</td>
+	  					</tr>
+	  					<tr>
+	  						<th colspan=3>2.2 Evolution du parc</th>
+	  						
+	  					</tr>
+	  					<tr>
+	  						<th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Taux de restructuration</th>
+	  						<td class="text-right">{{resultat.taux_restructuration|pourcentage}}</td>
+	  						<td class="text-right">{{resultat.taux_restructuration_actuel|pourcentage}} (Filocom 2009-2015)</td>
+	  					</tr>
+	  					<tr>
+	  						<th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Taux de disparition</th>
+	  						<td class="text-right">{{resultat.taux_disparition|pourcentage}}</td>
+	  						<td class="text-right">{{resultat.taux_disparition_actuel|pourcentage}} (Filocom 2009-2015)</td>
+	  					</tr>
+	  					<tr>
+	  						<th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Taux de logements vacants cible</th>
+	  						<td class="text-right">{{resultat.taux_vacance|pourcentage}}</td>
+	  						<td class="text-right">{{resultat.taux_vacance_actuel|pourcentage}} (Filocom 2015)</td>
+	  					</tr>
+	  					<tr>
+	  						<th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Taux de résidences secondaires cible</th>
+	  						<td class="text-right">{{resultat.taux_residence_secondaire|pourcentage}}</td>
+	  						<td class="text-right">{{resultat.taux_residence_secondaire_actuel|pourcentage}} (Filocom 2015)</td>
+	  					</tr>
+	  						
+	  						
+	  							
+					</tboby>						
+			</table>
+			
+			
+			</div>
+		</div>
+
+		</div>
+	</div>
+	
+	<div class="page-header">
+  		<h2><i class="fa fa-table" aria-hidden="true"></i> Résultat sur la zone d'emploi {{resultat.parametres.nom_ze}} ({{code_zone}})</h2>
+	</div>
+	
+	
+	<div class="panel panel-primary">
+		<div class="panel-heading">La décomposition des besoins en logement</div>  		
+		<div class="panel-body">		
+			<table class="table table-bordered">
+	  			<thead>  					
+	  					<th width="50%"></th>
+	  					<th class="text-right">Besoin sur 1 an</th>
+	  					<th class="text-right">Besoin sur 6 ans</th>
+	  					<th class="text-right">Poids de la brique</th>
+	  			</thead>
+	  			<tbody>
+	  					<tr style="background-color:#DCDCDC;">
+	  						<th>B. Besoins totaux en production de logements</th>
+	  						<th class="text-right">{{resultat.total_besoin_1an|intcomma}}</th>
+	  						<th class="text-right">{{resultat.total_besoin_6ans|intcomma}}</th>
+	  						<th class="text-right">100%</th>
+	  					</tr>
+	  					<tr>
+	  						<th>B1. Besoins en stock après réallocation<sup>(1)</sup></th>
+	  						<td class="text-right"><b>{{resultat.total_besoin_en_stock_apres_reallocation_1an|intcomma}}</b></td>
+	  						<td class="text-right"><b>{{resultat.total_besoin_en_stock_apres_reallocation_6ans|intcomma}}</b></td>
+	  						<td class="text-right"><b>{% if dp_positive %}{{resultat.part_besoin_stock_apres_reallocation}}%{% endif %}</b></td>
+	  						
+	  					</tr>				
+	  					<tr>
+	  						<th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Somme des briques</th>
+	  						<td class="text-right">{{resultat.total_besoin_en_stock_1an|intcomma}}</td>
+	  						<td class="text-right">{{resultat.total_besoin_en_stock_6ans|intcomma}}</td>
+	  						<td class="text-right">100%</td>
+	  						
+	  					</tr>
+	  					<tr>
+	  						<th><i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Dont 1.1. Hors logements</i></th>
+	  						<td class="text-right">{{resultat.total_b11_1an|intcomma}}</td>
+	  						<td class="text-right">{{resultat.total_b11_6ans|intcomma}}</td>
+	  						<td class="text-right">{{resultat.part_b11}}%</td>
+	  					</tr>	
+	  					<tr>
+	  						<th><i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Dont 1.2. Hébergés</i></th>
+	  						<td class="text-right">{{resultat.total_b12_1an|intcomma}}</td>
+	  						<td class="text-right">{{resultat.total_b12_6ans|intcomma}}</td>
+	  						<td class="text-right">{{resultat.part_b12}}%</td>
+	  					</tr>	
+	  					<tr>
+	  						<th><i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Dont 1.3. Inadéquation financière<sup>(2)</sup></i></th>
+	  						<td class="text-right">{{resultat.total_b13_corrige_1an|intcomma}}</td>
+	  						<td class="text-right">{{resultat.total_b13_corrige_6ans|intcomma}}</td>
+	  						<td class="text-right">{{resultat.part_b13_corrige}}%</td>
+	  					</tr>	
+	  					<tr>
+	  						<th><i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Dont 1.4. Mauvaise qualité</i></th>
+	  						<td class="text-right">{{resultat.total_b14_1an|intcomma}}</td>
+	  						<td class="text-right">{{resultat.total_b14_6ans|intcomma}}</td>
+	  						<td class="text-right">{{resultat.part_b14}}%</td>
+	  					</tr>	
+	  					<tr>
+	  						<th><i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Dont 1.5. Inadéquation physique<sup>(2)</sup></i></th>
+	  						<td class="text-right">{{resultat.total_b15_corrige_1an|intcomma}}</td>
+	  						<td class="text-right">{{resultat.total_b15_corrige_6ans|intcomma}}</td>
+	  						<td class="text-right">{{resultat.part_b15_corrige}}%</td>
+	  					</tr>	
+	  					<tr>
+	  						<th><i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Dont 1.7. Parc social</i></th>
+	  						<td class="text-right">{{resultat.total_b17_1an|intcomma}}</td>
+	  						<td class="text-right">{{resultat.total_b17_6ans|intcomma}}</td>
+	  						<td class="text-right">{{resultat.part_b17}}%</td>
+	  					</tr>	
+	  					<tr>
+	  						<th>B2. Besoins en flux</th>
+	  						<td class="text-right"><b>{{resultat.demande_potentielle_1an|intcomma}}</b></td>
+	  						<td class="text-right"><b>{{resultat.demande_potentielle|intcomma}}</b></td>
+	  						<td class="text-right"><b>{% if dp_positive %}{{resultat.part_demande_potentielle}}%{% endif %}</b></td>
+	  					</tr>	
+	  					<tr>
+	  						<th><i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Dont 2.1. Evolution du nombre de RP</i></th>
+	  						<td class="text-right">{{resultat.menages_suppl_1an|intcomma}}</td>
+	  						<td class="text-right">{{resultat.menages_suppl|intcomma}}</td>
+	  						<td class="text-right">{% if decomposition_dp_positive %}{{resultat.part_menages_suppl_sur_besoin_flux}}%{% endif %}</td>
+	  					</tr>	
+	  					<tr>
+	  						<th><i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Dont 2.2. Besoins en renouvellement</i></th>
+	  						<td class="text-right">{{resultat.besoin_en_renouvellement_1an|intcomma}}</td>
+	  						<td class="text-right">{{resultat.besoin_en_renouvellement|intcomma}}</td>
+	  						<td class="text-right">{% if decomposition_dp_positive %}{{resultat.part_renouvellement_sur_besoin_flux}}%{% endif %}</td>
+	  					</tr>
+	  					<tr>
+	  						<th><i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Dont 2.2. Evolution du nombre de LV {% if resultat.evolution_logements_vacants < 0 %}<sup>(3)</sup>{% endif %}</i></th>
+	  						<td class="text-right">{{resultat.evolution_logements_vacants_1an|intcomma}}</td>
+	  						<td class="text-right">{{resultat.evolution_logements_vacants|intcomma}}</td>
+	  						<td class="text-right">{% if decomposition_dp_positive %}{{resultat.part_logement_vacant_sur_besoin_flux}}%{% endif %}</td>
+	  					</tr>
+	  					<tr>
+	  						<th><i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Dont 2.2. Evolution du nombre de RS {% if resultat.evolution_residences_secondaires < 0 %}<sup>(3)</sup>{% endif %}</i></th>
+	  						<td class="text-right">{{resultat.evolution_residences_secondaires_1an|intcomma}}</td>
+	  						<td class="text-right">{{resultat.evolution_residences_secondaires|intcomma}}</td>
+	  						<td class="text-right">{% if decomposition_dp_positive %}{{resultat.part_residence_secondaire_sur_besoin_flux}}%{% endif %}</td>
+	  					</tr>
+	  					<tr style="background-color:#DCDCDC;">
+	  						<th>B1.4 Besoins complémentaires en réhabilitation</th>
+	  						<th class="text-right">{{resultat.total_besoin_rehabilitation_1an|intcomma}}</th>
+	  						<th class="text-right">{{resultat.total_besoin_rehabilitation_6ans|intcomma}}</th>
+	  						<th class="text-right"></th>
+	  					</tr>			
+					</tboby>						
+			</table>
+			
+			<div class="row">
+			<div class="col-sm-12">
+			<i>
+			(1) Les logements des ménages actuellement en inadéquation avec leur logement pourront être en partie réalloués à d’autres ménages, une fois qu’une réponse aura été apportée aux besoins de ces premiers ménages.
+			<br>
+			(2) Ces briques sont corrigées du cumul de plusieurs facteurs de mal logement.
+			<br>
+			{% if resultat.evolution_logements_vacants < 0 %}(3) Cette projection implique la conversion de {{resultat.evolution_logements_vacants|valabs }} logements vacants en résidences principales sur 6 ans.{% endif %}
+			<br>
+			{% if resultat.evolution_residences_secondaires < 0 %}(3) Cette projection implique la conversion de {{resultat.evolution_residences_secondaires|valabs }} résidences secondaires en résidences principales sur 6 ans.{% endif %}
+			<br>
+			</i>
+			</div>
+		</div>
+			
+			<div class="row">
+			<div class="col-sm-12">
+				<h4>Répartition des besoins en stock sur 6 ans par brique pour la zone d'emploi {{resultat.parametres.nom_ze}} ({{code_zone}})</h4>
+			</div>
+			</div>
+				
+			<div class="row">  		  		
+		  		<div class="col-sm-6">
+		  			<canvas id="myChartStock"></canvas>  		
+		  		</div>
+		  		<div class="col-sm-6"><div id="legendeStock"></div></div>
+		  	</div>		
+			
+{% if dp_positive %}
+			<div class="row">
+			<div class="col-sm-12">
+				<h4>Répartition des besoins totaux en logements sur 6 ans pour la zone d'emploi {{resultat.parametres.nom_ze}} ({{code_zone}})</h4>
+			</div>
+			</div>
+				
+			<div class="row"> 		
+		  		<div class="col-sm-6"><div id="legende"></div></div>
+		  		<div class="col-sm-6">
+		  			<canvas id="myChart"></canvas>  		
+		  		</div>
+		  	</div>
+{% endif %}
+		  		
+		  			<script src="{% static 'js/Chart.min.js' %}"></script>
+				  	<script>
+				  		var ctxStock = document.getElementById("myChartStock");
+						var ctx = document.getElementById("myChart");
+						
+						var dataStock = {
+						    labels: [
+						        "1.1 - Hors logement",
+						        "1.2 - Hébergés",
+						        "1.3 - Inadéquation financière",
+						        "1.4 - Mauvaise qualité",
+						        "1.5 - Inadéquation physique",
+						        "1.7 - Parc social",						              
+						    ],
+						    datasets: [
+						        {
+						            label: "Detail par briques",
+						        	data: [
+						            		{{resultat.total_b11_6ans|positif}}, 
+						            		{{resultat.total_b12_6ans|positif}},
+						            		{{resultat.total_b13_corrige_6ans|positif}}, 
+						            		{{resultat.total_b14_6ans|positif}},
+						            		{{resultat.total_b15_corrige_6ans|positif}}, 
+						            		{{resultat.total_b17_6ans|positif}},						            		
+						            	   ],
+						            backgroundColor: [
+						                "#003399", 
+						                "#336699",
+						                "#3366ff",
+						                "#00bfff",
+						                "#00ffff",
+						                "#b3ffff",						               	                
+						            ],
+						            hoverBackgroundColor: [
+										"#003399", 
+						                "#336699",
+						                "#3366ff",
+						                "#00bfff",
+						                "#00ffff",
+						                "#b3ffff",		
+						            ]
+						        },
+						        ]
+						};
+						
+						var myDoughnutChartStock = new Chart(ctxStock, {
+						    type: 'doughnut',
+						    data: dataStock,
+						    options: {
+						    	legendCallback: function (chart) {
+						            var text = [];
+						            text.push('<ul style="list-style-type: none;" class="' + chart.id + '-legend">');
+
+						            var data = chart.data;
+						            var datasets = data.datasets;
+						            var labels = data.labels;
+
+						            if (datasets.length) {
+						                for (var i = 0; i < datasets[0].data.length; ++i) {
+						                    text.push('<li><span style="display: inline-block; width: 20px; height: 12px; margin-right: 5px; background-color:' + datasets[0].backgroundColor[i] + '"></span>');
+						                    if (labels[i]) {						                    	
+						                    	var pourcentage = Math.round(100*(datasets[0].data[i] * 100 /{{resultat.total_besoin_en_stock_6ans}})) / 100;
+						                        text.push(labels[i] + ' (' + datasets[0].data[i] + ' - ' + pourcentage + '%)');
+						                    }
+						                    text.push('</li>');
+						                }
+						            }
+						            text.push('</ul>');
+						            return text.join('');
+						        },
+						    	legend: {
+						            // since you're providing your own legend
+						            display: false,
+						        },
+						    },
+						});
+						
+						var legendStock = myDoughnutChartStock.generateLegend();
+						document.getElementById("legendeStock").innerHTML = legendStock;
+						
+{% if decomposition_dp_positive %}		
+						var data = {
+						    labels: [
+						        "1.1 - Hors logement",
+						        "1.2 - Hébergés",
+						        "1.3 - Inadéquation financière après réallocation",
+						        "1.4 - Mauvaise qualité",
+						        "1.5 - Inadéquation physique après réallocation",
+						        "1.7 - Parc social",
+						        "2.1 - Evolution démographique",
+						        "2.2 - Besoin en renouvellement",
+						        "2.2 - Evolution du nombre de LV",
+						        "2.2 - Evolution du nombre de RS",
+						        "B1 - Besoin total en stock après réallocation",
+						        //"B1 - Réallocation",
+						        "B2 - Besoin total en flux",						        
+						    ],
+						    datasets: [
+						        {
+						            label: "Detail par briques",
+						        	data: [
+						            		{{resultat.total_b11_6ans|positif}}, 
+						            		{{resultat.total_b12_6ans|positif}},
+						            		{{resultat.total_b13_corrige_apres_reallocation_6ans|positif}}, 
+						            		{{resultat.total_b14_6ans|positif}},
+						            		{{resultat.total_b15_corrige_apres_reallocation_6ans|positif}}, 
+						            		{{resultat.total_b17_6ans|positif}},
+						            		{{resultat.menages_suppl|positif}}, 
+						            		{{resultat.besoin_en_renouvellement|positif}},
+						            		{{resultat.evolution_logements_vacants|positif}},
+						            		{{resultat.evolution_residences_secondaires|positif}},
+						            	   ],
+						            backgroundColor: [
+						                "#003399", 
+						                "#336699",
+						                "#3366ff",
+						                "#00bfff",
+						                "#00ffff",
+						                "#b3ffff",
+						                "#7b241c",
+						                "#c62828",
+						                "#e53935",
+						                "#ef5350",		                
+						            ],
+						            hoverBackgroundColor: [
+										"#003399", 
+						                "#336699",
+						                "#3366ff",
+						                "#00bfff",
+						                "#00ffff",
+						                "#b3ffff",
+										"#7b241c",
+										"#c62828",
+										"#e53935",
+										"#ef5350",	
+						            ]
+						        },
+						        {
+						            label: "Résultat global",
+						        	data: [
+						            		{{resultat.total_besoin_en_stock_apres_reallocation_6ans|positif}},
+						            		//{{resultat.total_reallocation_6ans|positif}},
+						            		{{resultat.demande_potentielle|positif}},
+						            		
+						            	   ],
+						            backgroundColor: [
+						                "#0033FF",
+						                //"#90a4ae",
+						                "#FF0000",
+						               	                
+						            ],
+						            hoverBackgroundColor: [
+						                "#0033FF",
+						              	//"#90a4ae",
+						                "#FF0000",						               
+						            ]
+						        }]
+						};
+
+						
+						
+						
+						var myDoughnutChart = new Chart(ctx, {
+						    type: 'doughnut',
+						    data: data,
+						    options: {
+						    	tooltips: {
+					                enabled: true,
+					                mode: 'single',
+					                callbacks: {
+					                	label: function(tooltipItem, data) {
+					                		if (tooltipItem.datasetIndex == 1) decalage = data.datasets[0].data.length; else decalage = 0;
+					                        var label = data.labels[tooltipItem.index + decalage];
+					                        var datasetLabel = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+					                        return label + ': ' + datasetLabel;
+					                      }
+					                }
+					            },
+						        legendCallback: function (chart) {
+						            var text = [];
+						            text.push('<ul style="list-style-type: none;" class="' + chart.id + '-legend">');
+
+						            var data = chart.data;
+						            var datasets = data.datasets;
+						            var labels = data.labels;
+
+						            if (datasets.length) {
+						                for (var i = 0; i < datasets[0].data.length; ++i) {
+						                    text.push('<li><span style="display: inline-block; width: 20px; height: 12px; margin-right: 5px; background-color:' + datasets[0].backgroundColor[i] + '"></span>');
+						                    if (labels[i]) {
+						                    	var pourcentage = Math.round(100*(datasets[0].data[i] * 100 / (datasets[1].data[0] + datasets[1].data[1]))) / 100;
+						                        text.push(labels[i] + ' (' + datasets[0].data[i] + ' - ' + pourcentage + '%)');
+						                    }
+						                    text.push('</li>');
+						                }
+						                text.push('<li><br></li>')
+						                for (var i = 0; i < datasets[1].data.length; ++i) {
+						                    text.push('<li><span style="display: inline-block; width: 20px; height: 12px; margin-right: 5px; background-color:' + datasets[1].backgroundColor[i] + '"></span>');
+						                    if (labels[i+datasets[0].data.length]) {
+						                    	var pourcentage = Math.round(100*(datasets[1].data[i] * 100 / (datasets[1].data[0] + datasets[1].data[1]))) / 100;
+						                        text.push(labels[i+datasets[0].data.length] + ' (' + datasets[1].data[i] + ' - ' + pourcentage + '%)');
+						                    }
+						                    text.push('</li>');
+						                }
+						            }
+						            text.push('</ul>');
+						            return text.join('');
+						        },
+						        legend: {
+						            // since you're providing your own legend
+						            display: false,
+						        },
+						     	}
+						});
+						
+						var legend = myDoughnutChart.generateLegend();
+						document.getElementById("legende").innerHTML = legend;
+						
+{% endif %}
+
+{% if not decomposition_dp_positive and dp_positive %}		
+						var data = {
+						    labels: [						      
+						        "B1 - Besoin total en stock après réallocation",
+						        "B2 - Besoin total en flux",						        
+						    ],
+						    datasets: [						        
+						        {
+						            label: "Résultat global",
+						        	data: [
+						            		{{resultat.total_besoin_en_stock_apres_reallocation_6ans|positif}},						            		
+						            		{{resultat.demande_potentielle|positif}},						            		
+						            	   ],
+						            backgroundColor: [
+						                "#0033FF",
+						                "#FF0000",
+						               	                
+						            ],
+						            hoverBackgroundColor: [
+						                "#0033FF",
+						              	"#FF0000",						               
+						            ]
+						        }]
+						};
+									
+						var myDoughnutChart = new Chart(ctx, {
+						    type: 'doughnut',
+						    data: data,
+						    options: {
+						    	tooltips: {
+					                enabled: true,
+					                mode: 'single',
+					                callbacks: {
+					                	label: function(tooltipItem, data) {					                		
+					                        var label = data.labels[tooltipItem.index];
+					                        var datasetLabel = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+					                        return label + ': ' + datasetLabel;
+					                      }
+					                }
+					            },
+						        legendCallback: function (chart) {
+						            var text = [];
+						            text.push('<ul style="list-style-type: none;" class="' + chart.id + '-legend">');
+
+						            var data = chart.data;
+						            var datasets = data.datasets;
+						            var labels = data.labels;
+
+						            if (datasets.length) {
+						                for (var i = 0; i < datasets[0].data.length; ++i) {
+						                    text.push('<li><span style="display: inline-block; width: 20px; height: 12px; margin-right: 5px; background-color:' + datasets[0].backgroundColor[i] + '"></span>');
+						                    if (labels[i]) {
+						                    	var pourcentage = Math.round(100*(datasets[0].data[i] * 100 / (datasets[0].data[0] + datasets[0].data[1]))) / 100;
+						                        text.push(labels[i] + ' (' + datasets[0].data[i] + ' - ' + pourcentage + '%)');
+						                    }
+						                    text.push('</li>');
+						                }						                
+						            }
+						            text.push('</ul>');
+						            return text.join('');
+						        },
+						        legend: {
+						            // since you're providing your own legend
+						            display: false,
+						        },
+						     	}
+						});
+						
+						var legend = myDoughnutChart.generateLegend();
+						document.getElementById("legende").innerHTML = legend;
+						
+{% endif %}
+
+					</script>
+
+		</div>
+		</div>
+
+	
+
+	<div class="panel panel-primary">
+		<div class="panel-heading">La ventilation des besoins en production de logements par parc de destination</div>  		
+		<div class="panel-body">		
+			<table class="table table-bordered">
+	  			<thead>  					
+	  					<th width="50%"></th>
+	  					<th class="text-right">Besoins sur 1 an</th>
+	  					<th class="text-right">Besoins sur 6 ans</th>
+	  					<th class="text-right">Poids de la brique</th>
+	  			</thead>
+	  			<tbody>
+	  					<tr style="background-color:#DCDCDC;">
+	  						<th>B. Besoins totaux en production de logements</th>
+	  						<th class="text-right">{{resultat.total_besoin_1an|intcomma}}</th>
+	  						<th class="text-right">{{resultat.total_besoin_6ans|intcomma}}</th>
+	  						<th class="text-right">100%</th>
+	  					</tr>
+	  					<tr>
+	  						<th>Dont besoins en logements sociaux (LS)</th>
+	  						<td class="text-right">{{resultat.total_besoin_ls_1an|intcomma}}</td>
+	  						<td class="text-right">{{resultat.total_besoin_ls_6ans|intcomma}}</td>
+	  						<td class="text-right">{{resultat.part_besoin_ls}}%</td>	  						
+	  					</tr>				
+	  					<tr>
+	  						<th>Dont besoins en logements libres (LL)</th>
+	  						<td class="text-right">{{resultat.total_besoin_ll_1an|intcomma}}</td>
+	  						<td class="text-right">{{resultat.total_besoin_ll_6ans|intcomma}}</td>
+	  						<td class="text-right">{{resultat.part_besoin_ll}}%</td>	  						
+	  					</tr>	  								
+					</tboby>						
+			</table>
+			</div>
+		</div>
+	
+	<div class="panel panel-primary">
+		<div class="panel-heading">
+			Les besoins en production de logements rapportés au parc
+			<span class="fa-stack fa-lg" data-toggle="popover" data-placement="bottom" title="Parc de référence" 
+  			data-html="True"
+  			data-content="Parc Filocom 2015: {{resultat.parc_total_filo|intcomma}}<br>Parc social RPLS 2015 : {{resultat.parc_social_rpls|intcomma}}<br>Parc libre (Filocom - RPLS): {{resultat.parc_non_social|intcomma}}"
+  			data-template='<div class="popover" role="tooltip"><div class="arrow"></div><h3 style="color:#e95420;" class="popover-title"></h3><div style="color:#333333;" class="popover-content"></div></div>'>
+  				<i class="fa fa-circle fa-stack-2x text-success"></i>
+ 				 <i class="fa fa-question fa-stack-1x fa-inverse"></i>
+			</span>
+		</div>  		
+		<div class="panel-body">		
+			<table class="table table-bordered">
+	  			<thead>  					
+	  					<th width="50%"></th>
+	  					<th class="text-right">Sur 1 an</th>
+	  					<th class="text-right">Sur 6 ans</th>	  					
+	  			</thead>
+	  			<tbody>
+	  					<tr style="background-color:#DCDCDC;">
+	  						<th>B. Besoins totaux en production de logements</th>
+	  						<th class="text-right">{{resultat.besoin_rapporte_au_parc_total_1an|pourcentage}}</th>
+	  						<th class="text-right">{{resultat.besoin_rapporte_au_parc_total_6ans|pourcentage}}</th>	  						
+	  					</tr>
+	  					<tr>
+	  						<th>B1. Besoins en stock après réallocation</th>
+	  						<td class="text-right">{{resultat.part_besoin_stock_apres_reallocation_sur_parc_total_1an}}%</td>
+	  						<td class="text-right">{{resultat.part_besoin_stock_apres_reallocation_sur_parc_total_6ans}}%</td>	  						 						
+	  					</tr>				
+	  					<tr>
+	  						<th>B2. Besoins en flux</th>
+	  						<td class="text-right">{{resultat.part_demande_potentielle_sur_parc_total_1an}}%</td>
+	  						<td class="text-right">{{resultat.part_demande_potentielle_sur_parc_total_6ans}}%</td>	  							  						
+	  					</tr>	  								
+					</tboby>
+					<tbody>
+	  					<tr style="background-color:#DCDCDC;">
+	  						<th>B. Besoins totaux en production de logements</th>
+	  						<th class="text-right">{{resultat.besoin_rapporte_au_parc_total_1an|pourcentage}}</th>
+	  						<th class="text-right">{{resultat.besoin_rapporte_au_parc_total_6ans|pourcentage}}</th>
+	  					</tr>
+	  					<tr>
+	  						<th>Besoins en logements sociaux (LS) rapportés au parc social</th>
+	  						<td class="text-right">{{resultat.part_besoin_ls_sur_parc_social}}%</td>
+	  						<td class="text-right">{{resultat.part_besoin_ls_sur_parc_social_6ans}}%</td>	  							  						
+	  					</tr>				
+	  					<tr>
+	  						<th>Besoins en logements libres (LL) rapportés au parc libre</th>
+	  						<td class="text-right">{{resultat.part_besoin_ll_sur_parc_non_social}}%</td>
+	  						<td class="text-right">{{resultat.part_besoin_ll_sur_parc_non_social_6ans}}%</td>	  											
+	  					</tr>	  								
+					</tboby>							
+			</table>
+			</div>
+		</div>
+
+{% endif %}
+	
+{% endblock %}

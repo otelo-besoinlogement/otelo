@@ -1,0 +1,449 @@
+{% extends 'principal.html' %}
+{% load humanize %}
+{% load formatnum_extras %}
+{% block body %}
+
+
+<div class="page-header">
+		<h1><i class="fa fa-calculator" aria-hidden="true"></i> Résultat sur plusieurs zones d'emploi <small>Synthèse</small></h1>
+</div>
+
+
+
+<div class="panel panel-primary">
+	<div class="panel-heading">Choix des zones d'emploi</div>  		
+	<div class="panel-body">  				
+		<form class="form-horizontal" method="post">
+		{% csrf_token %}
+			<div class="col-sm-10">
+				<select class="form-control selectpicker" multiple name="zone_emploi">
+					<option value="0000">Sélectionnez les zones d'emploi...</option>
+				{% for parametre in parametres %}					  
+				  	<option value="{{parametre.code_ze}}"{% if parametre.code_ze in codes_zone %} selected{% endif %}>{{parametre.code_ze}} - {{parametre.nom_ze}}</option>
+				{% endfor %}
+				</select>
+			</div>
+			<div class="col-sm-2">
+				<button type="submit" class="btn btn-primary" name="afficher" alt="Afficher les résultats" title="Afficher les résultats">
+					<i class="fa fa-search" aria-hidden="true"></i>
+				</button>
+				&nbsp;&nbsp;&nbsp;&nbsp;
+				<button class="btn btn-primary" id="selectionner" alt="Sélectionner tout" title="Sélectionner tout">
+					<i class="fa fa-check" aria-hidden="true"></i>
+				</button>
+				<button class="btn btn-primary" id="deselectionner" alt="Déselectionner tout" title="Déselectionner tout">
+					<i class="fa fa-times" aria-hidden="true"></i>
+				</button>
+			</div>
+		</form>	
+	</div>
+	</div>
+	
+
+
+{% if affichage_resultat %}
+
+<div class="page-header">
+	<h2><i class="fa fa-table" aria-hidden="true"></i> B. Synthèse des besoins sur 1 an</h2>
+</div>
+
+	<div class="panel panel-primary">
+  		<div class="panel-heading"> Les besoins sur 1 an en volume</div>  		
+  		<div class="panel-body">
+  		
+  		<table class="table table-bordered">
+  			<thead>
+  				<tr align=center>	
+  					<th width=5%><p align="center">Code</p></th>
+  					<th width=15%><p align="center">Nom</p></th>
+  					<th><p align="center">B. Besoins totaux en production de logements</p></th>
+  					<th><p align="center">Besoins complémentaires en réhabilitation</p></th>
+  				</tr>  			
+  			</thead>
+  			<tbody>
+  				{% for resultat in resultats %}
+  					<tr>
+  						<td>{{resultat.code_zone}}</td>
+  						<td>{{resultat.nom_zone}}</td>
+  						<td class='text-right'><b>{{resultat.total_besoin_1an|intcomma}}</b></td>
+  						<td class='text-right'>{{resultat.total_besoin_rehabilitation_1an|intcomma}}</td>
+  					</tr>
+  				{% endfor %}
+  					<tr>
+  						<th colspan=2 class='text-center'>TOTAL</th>
+  						<th class='text-right'>{{resultats|somme:"total_besoin_1an"|intcomma}}</th>
+  						<th class='text-right'>{{resultats|somme:"total_besoin_rehabilitation_1an"|intcomma}}</th>
+  					</tr>
+  			</tbody>
+		</table>
+  		</div>
+  	</div>
+
+
+
+	<div class="panel panel-primary">
+  		<div class="panel-heading">Les besoins en production de logements sur 1 an par type de besoin et par parc de destination</div>  		
+  		<div class="panel-body">
+  		
+  		<table class="table table-bordered">
+  			<thead>
+  					<th rowspan=2 width=2%><p align="center">Code</p></th>
+  					<th rowspan=2 width=10%><p align="center">Nom</p></th>
+  					<th colspan=4> <p align="center">B1. Besoins en stock après réallocation</p></th>
+					<th colspan=4> <p align="center">B2. Besoins en flux</p></th>
+  					<th rowspan=2><p align="center">B. Besoins totaux en production de logements</p></th>
+  					<th rowspan=2><p align="center">Total des besoins en LS</p></th>
+  					<th rowspan=2><p align="center">Part des besoins en LS</p></th>
+  					<th rowspan=2><p align="center">Total des besoins en LL</p></th>  	
+  				<tr>
+  					<th> <p align="center">Besoins en LS</p></th>
+  					<th> <p align="center">Besoins en LL</p></th>
+  					<th> <p align="center">Total B1</p></th>
+  					<th> <p align="center">Part du B1 dans le total B</p></th>
+  					<th> <p align="center">Besoins en LS</p></th>
+  					<th> <p align="center">Besoins en LL</p></th>
+  					<th> <p align="center">Total B2</p></th>
+  					<th> <p align="center">Part du B2 dans le total B</p></th>
+  				</tr>
+  			</thead>
+  			<tbody>
+  				{% for resultat in resultats %}
+  					<tr>
+  						<td>{{resultat.code_zone}}</td>
+  						<td>{{resultat.nom_zone}}</td>
+						<td class='text-right'>{{resultat.total_besoin_stock_ls_1an|intcomma}}</td>
+						<td class='text-right'>{{resultat.total_besoin_stock_ll_1an|intcomma}}</td>
+						<td class='text-right'><b>{{resultat.total_besoin_en_stock_apres_reallocation_1an|intcomma}}</b></td>
+						<td class='text-right'>{{resultat.part_besoin_stock_apres_reallocation}}%</td>
+						<td class='text-right'>{{resultat.demande_potentielle_ls_1an|intcomma}}</td>
+						<td class='text-right'>{{resultat.demande_potentielle_ll_1an|intcomma}}</td>
+  						<td class='text-right'><b>{{resultat.demande_potentielle_1an|intcomma}}</b></td>
+						<td class='text-right'>{{resultat.part_demande_potentielle}}%</td>
+  						<td class='text-right'><b>{{resultat.total_besoin_1an|intcomma}}</b></td>
+  						<td class='text-right'>{{resultat.total_besoin_ls_1an|intcomma}}</td>
+						<td class='text-right'>{{resultat.part_besoin_ls}}%</td>
+						<td class='text-right'>{{resultat.total_besoin_ll_1an|intcomma}}</td>  						
+  					</tr>
+  				{% endfor %}
+  					<tr>
+  						<th colspan=2 class='text-center'>TOTAL</th>
+  						<th class='text-right'>{{resultats|somme:"total_besoin_stock_ls_1an"|intcomma}}</th>
+  						<th class='text-right'>{{resultats|somme:"total_besoin_stock_ll_1an"|intcomma}}</th>
+  						<th class='text-right'>{{resultats|somme:"total_besoin_en_stock_apres_reallocation_1an"|intcomma}}</th>
+  						<th class='text-right'>{{resultats|ratio:"total_besoin_en_stock_apres_reallocation_1an/total_besoin_1an"|pourcentage}}</th>
+  						<th class='text-right'>{{resultats|somme:"demande_potentielle_ls_1an"|intcomma}}</th>
+  						<th class='text-right'>{{resultats|somme:"demande_potentielle_ll_1an"|intcomma}}</th>
+  						<th class='text-right'>{{resultats|somme:"demande_potentielle_1an"|intcomma}}</th>
+  						<th class='text-right'>{{resultats|ratio:"demande_potentielle_1an/total_besoin_1an"|pourcentage}}</th>
+  						<th class='text-right'>{{resultats|somme:"total_besoin_1an"|intcomma}}</th>
+  						<th class='text-right'>{{resultats|somme:"total_besoin_ls_1an"|intcomma}}</th>
+  						<th class='text-right'>{{resultats|ratio:"total_besoin_ls_1an/total_besoin_1an"|pourcentage}}</th>
+  						<th class='text-right'>{{resultats|somme:"total_besoin_ll_1an"|intcomma}}</th>
+  					</tr>
+  			</tbody>
+		</table>
+	</div>
+	</div>
+  
+  	<div class="panel panel-primary">
+  		<div class="panel-heading">Les besoins en production de logements sur 1 an rapportés au parc</div>  		
+  		<div class="panel-body">
+  		
+  		<table class="table table-bordered">
+  			<thead>
+  					<th width=2%><p align="center">Code</p></th>
+  					<th width=10%><p align="center">Nom</p></th>
+  					<th> <p align="center">Parc Filocom 2015</p></th>
+					<th> <p align="center">B1. Besoins en stock après réallocation</p></th>
+					<th> <p align="center">B2. Besoins en flux</p></th>
+					<th> <p align="center">B. Besoins totaux en production de logements</p></th>
+					<th> <p align="center">Parc social RPLS 2015</p></th>
+					<th> <p align="center">Total des besoins en LS rapportés au parc social</p></th>
+					<th> <p align="center">Parc libre (Filocom - RPLS)</p></th>
+					<th> <p align="center">Total des besoins en LL rapportés au parc libre</p></th>
+  			</thead>
+  			<tbody>
+  				{% for resultat in resultats %}
+  					<tr>
+  						<td>{{resultat.code_zone}}</td>
+  						<td>{{resultat.nom_zone}}</td>
+						<td class='text-right'>{{resultat.parc_total_filo|intcomma}}</td>
+						<td class='text-right'>{{resultat.part_besoin_stock_apres_reallocation_sur_parc_total_1an}}%</td>
+						<td class='text-right'>{{resultat.part_demande_potentielle_sur_parc_total_1an}}%</td>
+						<td class='text-right'>{{resultat.besoin_rapporte_au_parc_total_1an|pourcentage}}</td>
+						<td class='text-right'>{{resultat.parc_social_rpls|intcomma}}</td>
+						<td class='text-right'>{{resultat.part_besoin_ls_sur_parc_social}}%</td>
+						<td class='text-right'>{{resultat.parc_non_social|intcomma}}</td>
+						<td class='text-right'>{{resultat.part_besoin_ll_sur_parc_non_social}}%</td>
+  					</tr>
+  				{% endfor %}
+  					<tr>
+  						<th colspan=2 class='text-center'>TOTAL</th>
+  						<th class='text-right'>{{resultats|somme:"parc_total_filo"|intcomma}}</th>
+  						<th class='text-right'>{{resultats|ratio:"total_besoin_en_stock_apres_reallocation_1an/parc_total_filo"|pourcentage}}</th>
+  						<th class='text-right'>{{resultats|ratio:"demande_potentielle_1an/parc_total_filo"|pourcentage}}</th>
+  						<th class='text-right'>{{resultats|ratio:"total_besoin_1an/parc_total_filo"|pourcentage}}</th>
+  						<th class='text-right'>{{resultats|somme:"parc_social_rpls"|intcomma}}</th>
+  						<th class='text-right'>{{resultats|ratio:"total_besoin_ls_1an/parc_social_rpls"|pourcentage}}</th>
+  						<th class='text-right'>{{resultats|somme:"parc_non_social"|intcomma}}</th>  						
+  						<th class='text-right'>{{resultats|ratio:"total_besoin_ll_1an/parc_non_social"|pourcentage}}</th>  						
+  					</tr>
+  			</tbody>
+		</table>
+	</div>
+	</div>
+
+
+<div class="page-header">
+	<h2><i class="fa fa-table" aria-hidden="true"></i> B1 – Détail des besoins en stock</h2>
+</div>
+
+	<div class="panel panel-primary">
+  		<div class="panel-heading"> La décomposition et la ventilation par parc de destination des besoins en stock à horizon infini</div>  		
+  		<div class="panel-body">
+		
+		<table class="table table-bordered">
+  			<thead>
+  					<th rowspan=2 width=2%><p align="center">Code</p></th>
+  					<th rowspan=2 width=10%><p align="center">Nom</p></th>
+					<th><p align="center">1.1 Hors logement</p></th>
+					<th colspan=2> <p align="center">1.2 Hébergés</p></th>
+  					<th colspan=2> <p align="center">1.3 Inadéquation financière (*)</p></th>
+  					<th colspan=2> <p align="center">1.4 Mauvaise qualité</p></th>
+  					<th colspan=2> <p align="center">1.5 Inadéquation physique (*)</p></th>	
+  					<th><p align="center">1.7 Parc social</p></th>								
+  				<tr>
+  					<th> <p align="center">Total</p></th>
+  					<th> <p align="center">Total</p></th>
+  					<th> <p align="center">dont besoin LS</p></th>
+					<th> <p align="center">Total</p></th>
+					<th> <p align="center">dont besoin LS</p></th>
+					<th> <p align="center">Total</p></th>
+					<th> <p align="center">dont besoin LS</p></th>
+					<th> <p align="center">Total</p></th>
+					<th> <p align="center">dont besoin LS</p></th>
+					<th> <p align="center">Total</p></th>
+  				</tr>	  					
+				
+  			</thead>
+  			<tbody>
+  				{% for resultat in resultats %}
+  					<tr>
+  						<td>{{resultat.code_zone}}</td>
+  						<td>{{resultat.nom_zone}}</td>
+						<td class='text-right'><b>{{resultat.total_b11|intcomma}}</b></td>											
+						<td class='text-right'><b>{{resultat.total_b12|intcomma}}</b></td>
+						<td class='text-right'>{{resultat.total_b12_ls|intcomma}}</td>
+						<td class='text-right'><b>{{resultat.total_b13_corrige|intcomma}}</b></td> 	
+						<td class='text-right'>{{resultat.total_b13_ls|intcomma}}</td>
+  						<td class='text-right'><b>{{resultat.total_b14|intcomma}}</b></td>
+						<td class='text-right'>{{resultat.total_b14_ls|intcomma}}</td>
+						<td class='text-right'><b>{{resultat.total_b15_corrige|intcomma}}</b></td> 	
+						<td class='text-right'>{{resultat.total_b15_ls|intcomma}}</td>
+  						<td class='text-right'><b>{{resultat.total_b17|intcomma}}</b></td>  						 								  		  						
+  					</tr>
+  				{% endfor %}
+  					<tr>
+  						<th colspan=2 class='text-center'>TOTAL</th>
+  						<th class='text-right'>{{resultats|somme:"total_b11"|intcomma}}</th>
+  						<th class='text-right'>{{resultats|somme:"total_b12"|intcomma}}</th>
+  						<th class='text-right'>{{resultats|somme:"total_b12_ls"|intcomma}}</th>
+  						<th class='text-right'>{{resultats|somme:"total_b13_corrige"|intcomma}}</th>
+  						<th class='text-right'>{{resultats|somme:"total_b13_ls"|intcomma}}</th>
+  						<th class='text-right'>{{resultats|somme:"total_b14"|intcomma}}</th>
+  						<th class='text-right'>{{resultats|somme:"total_b14_ls"|intcomma}}</th>
+  						<th class='text-right'>{{resultats|somme:"total_b15_corrige"|intcomma}}</th>
+  						<th class='text-right'>{{resultats|somme:"total_b15_ls"|intcomma}}</th>
+  						<th class='text-right'>{{resultats|somme:"total_b17"|intcomma}}</th>  									
+  					</tr>
+  			</tbody>
+		</table>	
+		
+		<p><i>(*) ces briques sont corrigées du cumul de plusieurs facteurs de mal logement</i></p>
+	</div>
+	</div>
+	
+	<div class="panel panel-primary">
+  		<div class="panel-heading"> Les besoins en stock à horizon fini</div>  		
+  		<div class="panel-body">
+			<table class="table table-bordered">
+  			<thead>
+  				<tr align=center>	
+  					<th rowspan=2 width=5%><p align="center">Code</p></th>
+  					<th rowspan=2 width=15%><p align="center">Nom</p></th>
+  					<th rowspan=2><p align="center">Somme des briques de besoins en stock</p></th>
+					<th rowspan=2><p align="center">Horizon de résorption</p></th>
+  					<th colspan=4> <p align="center">B1. Besoins en stock après réallocation</p></th>
+  					
+  				</tr>
+  				
+  				<tr>
+  					<th> <p align="center">Besoins sur 1 an</p></th>
+  					<th> <p align="center">Besoins sur 6 ans</p></th>
+  					<th> <p align="center">Part sur les besoins de la région (**)</p></th>
+					<th> <p align="center">Part sur les besoins du Total</p></th>
+				</tr>	
+  					
+  			</thead>
+  			<tbody>
+  				{% for resultat in resultats %}
+  					<tr>
+  						<td>{{resultat.code_zone}}</td>
+  						<td>{{resultat.nom_zone}}</td>
+  						<td class='text-right'>{{resultat.total_besoin_en_stock|intcomma}}</td>
+  						<td class='text-right'>{{resultat.parametres.horizon_resorption|intcomma}} ans</td>
+  						<td class='text-right'>{{resultat.total_besoin_en_stock_apres_reallocation_1an|intcomma}}</td>
+  						<td class='text-right'>{{resultat.total_besoin_en_stock_apres_reallocation_6ans|intcomma}}</td>
+						<td class='text-right'>{{resultat.part_besoin_stock_apres_reallocation_sur_ensemble_ze|pourcentage}}</td>
+  						<td class='text-right'>{{resultat.part_besoin_stock_apres_reallocation_selection|pourcentage}}</td>
+  					</tr>
+  				{% endfor %}
+  					<tr>
+  						<th colspan=2 class='text-center'>TOTAL</th>
+  						<th class='text-right'>{{resultats|somme:"total_besoin_en_stock"|intcomma}}</th>
+  						<th class='text-right'>{{resultats.0.parametres.horizon_resorption|intcomma}} ans</th>
+  						<th class='text-right'>{{resultats|somme:"total_besoin_en_stock_apres_reallocation_1an"|intcomma}}</th>
+  						<th class='text-right'>{{resultats|somme:"total_besoin_en_stock_apres_reallocation_6ans"|intcomma}}</th>
+  						<th class='text-right'>{{resultats|somme_float:"part_besoin_stock_apres_reallocation_sur_ensemble_ze"|pourcentage}}</th>
+  						<th class='text-right'>{{resultats|somme_float:"part_besoin_stock_apres_reallocation_selection"|pourcentage}}</th>						
+  					</tr>
+  			</tbody>
+		</table>
+		<p><i>(**) Région = somme des ZE de la région y compris les ZE interrégionales</i></p>
+	</div>
+	</div>
+
+
+
+
+
+	
+
+<div class="page-header">
+	<h2><i class="fa fa-table" aria-hidden="true"></i> B2. Détail des besoins en flux </h2>
+</div>
+
+
+
+
+
+	<div class="panel panel-primary">
+  		<div class="panel-heading"> La décomposition des besoins en flux</div>  		
+  		<div class="panel-body">
+		
+		<table class="table table-bordered">
+  			<thead>
+  					<th rowspan=2 width=2%><p align="center">Code</p></th>
+  					<th rowspan=2 width=10%><p align="center">Nom</p></th>
+					<th><p align="center">Besoin renouvellement du parc</p></th>
+					<th><p align="center">Evolution RP</p></th>
+  					<th colspan=2> <p align="center">Evolution RS</p></th>
+					<th colspan=2> <p align="center">Evolution LV</p></th>
+  					<th colspan=4><p align="center">B.2. Besoins en Flux</p></th>
+  				<tr>
+  					<th> <p align="center">Nb 2015-2021</p></th>
+					<th> <p align="center">Nb 2015-2021</p></th>
+					<th> <p align="center">Taux cible 2021</p></th>
+					<th> <p align="center">Nb 2015-2021</p></th>
+					<th> <p align="center">Taux cible 2021</p></th>
+					<th> <p align="center">Nb 2015-2021</p></th>
+					<th> <p align="center">Besoins sur 1 an</p></th>
+					<th> <p align="center">Besoins sur 6 ans</p></th>
+					<th> <p align="center">Part sur les besoins de la région (**)</p></th>
+					<th> <p align="center">Part sur les besoins du Total</p></th>
+  				</tr>	  					
+				
+  			</thead>
+  			<tbody>
+  				{% for resultat in resultats %}
+  					<tr>
+  						<td>{{resultat.code_zone}}</td>
+  						<td>{{resultat.nom_zone}}</td>
+						<td class='text-right'>{{resultat.besoin_en_renouvellement|intcomma}}</td>
+						<td class='text-right'>{{resultat.menages_residence_principale_supplementaire|intcomma}}</td>
+						<td class='text-right'>{{resultat.taux_residence_secondaire|pourcentage}}</td>
+						<td class='text-right'>{{resultat.evolution_residences_secondaires|intcomma}}</td>						
+						<td class='text-right'>{{resultat.taux_vacance|pourcentage}}</td>
+						<td class='text-right'>{{resultat.evolution_logements_vacants|intcomma}}</td>
+						<td class='text-right'><b>{{resultat.demande_potentielle_1an|intcomma}}</b></td>
+						<td class='text-right'><b>{{resultat.demande_potentielle|intcomma}}</b></td>
+						<td class='text-right'>{{resultat.part_besoin_flux_sur_ensemble_ze|pourcentage}}</td>
+						<td class='text-right'>{{resultat.part_besoin_flux_selection|pourcentage}}</td>										
+  					</tr>
+  				{% endfor %}
+  					<tr>
+  						<th colspan=2 class='text-center'>TOTAL</th>
+  						<th class='text-right'>{{resultats|somme:"besoin_en_renouvellement"|intcomma}}</th>
+  						<th class='text-right'>{{resultats|somme:"menages_residence_principale_supplementaire"|intcomma}}</th>
+  						<th class='text-right'>{{resultats|ratio:"nb_rs_2021/parc_2021"|pourcentage}}(*)</th>
+  						<th class='text-right'>{{resultats|somme:"evolution_logements_vacants"|intcomma}}</th>
+  						<th class='text-right'>{{resultats|ratio:"nb_lv_2021/parc_2021"|pourcentage}}(*)</th>
+  						<th class='text-right'>{{resultats|somme:"evolution_residences_secondaires"|intcomma}}</th>
+  						<th class='text-right'>{{resultats|somme:"demande_potentielle_1an"|intcomma}}</th>
+  						<th class='text-right'>{{resultats|somme:"demande_potentielle"|intcomma}}</th>
+  						<th class='text-right'>{{resultats|somme_float:"part_besoin_flux_sur_ensemble_ze"|pourcentage}}</th>
+  						<th class='text-right'>{{resultats|somme_float:"part_besoin_flux_selection"|pourcentage}}</th>						
+  					</tr>
+  			</tbody>
+		</table>
+		<p><i>(*) Moyenne pondérée des taux cibles</i></p>
+		<p><i>(**) Région = somme des ZE de la région y compris les ZE interrégionales</i></p>
+	</div>
+	</div>
+	
+	<div class="panel panel-primary">
+  		<div class="panel-heading"> La ventilation des besoins en flux par parc de destination</div>  		
+  		<div class="panel-body">
+			<table class="table table-bordered">
+  			<thead>
+  				<tr align=center>	
+  					<th rowspan=2 width=5%><p align="center">Code</p></th>
+  					<th rowspan=2 width=15%><p align="center">Nom</p></th>
+  					<th colspan=4> <p align="center">B.2. Besoins en Flux</p></th>
+  					
+  				</tr>
+  				
+  				<tr>
+  					<th> <p align="center">Besoins en LS sur 1 an</p></th>
+  					<th> <p align="center">Part des besoins en LS</p></th>
+  					<th> <p align="center">Besoins en LL sur 1 an</p></th>
+					<th> <p align="center">Besoins sur 1 an</p></th>
+				</tr>	
+  					
+  			</thead>
+  			<tbody>
+  				{% for resultat in resultats %}
+  					<tr>
+  						<td>{{resultat.code_zone}}</td>
+  						<td>{{resultat.nom_zone}}</td>
+  						<td class='text-right'>{{resultat.demande_potentielle_ls_1an|intcomma}}</td>
+  						<td class='text-right'>{{resultat.part_demande_potentielle_ls_sur_demande_potentielle}}%</td>
+  						<td class='text-right'>{{resultat.demande_potentielle_ll_1an|intcomma}}</td>
+  						<td class='text-right'><b>{{resultat.demande_potentielle_1an|intcomma}}</b></td>
+  					</tr>
+  				{% endfor %}
+  					<tr>
+  						<th colspan=2 class='text-center'>TOTAL</th>
+  						<th class='text-right'>{{resultats|somme:"demande_potentielle_ls_1an"|intcomma}}</th>
+  						<th class='text-right'>{{resultats|ratio:"demande_potentielle_ls_1an/demande_potentielle_1an"|pourcentage}}</th>
+  						<th class='text-right'>{{resultats|somme:"demande_potentielle_ll_1an"|intcomma}}</th>  						
+  						<th class='text-right'>{{resultats|somme:"demande_potentielle_1an"|intcomma}}</th>				
+  					</tr>
+  			</tbody>
+		</table>
+	</div>
+	</div>
+
+ 
+ 
+{% endif %}
+
+{% endblock %}
+
+{% block javascript %}
+<script type="text/javascript">
+	
+{% include 'js_gestion_deselect_select.html' %}
+	
+</script>
+{% endblock %}

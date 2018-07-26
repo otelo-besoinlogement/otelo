@@ -1,0 +1,140 @@
+{% extends 'principal.html' %}
+{% block body %}
+
+	<div class="page-header">
+  		<h1><i class="fa fa-cubes" aria-hidden="true"></i> Ventilation des besoins<small> Volet B1</small></h1>
+	</div>
+	
+	<div class="panel panel-info">
+  		<div class="panel-heading">Préambule</div>
+  		<div class="panel-body">
+  		<p>Une fois les ménages dont les besoins en logements sont actuellement mal ou pas satisfaits repérés, les réponses à apporter sont à définir.</p>
+  		<p><b>BESOINS AFFECTES AU LOGEMENT SOCIAL</b></p>
+  		<p>En fonction des caractéristiques des ménages identifiés et du logement social sur la zone d’évaluation, une part des besoins pourra être satisfaite par de la production de logement social.</p>
+  		
+  		<p><b>REALLOCATION DES LOGEMENTS INADEQUATS</b></p>
+  		<p>Pour les briques d’inadéquation (briques 1.3 et 1.5), les besoins en logements découlent d’un mauvais appariement entre le ménage et le logement. Dans ces cas, les logements ne sont pas défaillants. 
+  		Si des réponses sont apportées aux ménages actuellement en inadéquation avec leur logement, ces logements pourraient théoriquement être réalloués à d’autres ménages. 
+		La part de logements des briques d’inadéquation réallouables à de nouveaux ménages doit être fixée à ce stade.</p>	
+		</div>
+	</div>
+	
+	{% if message_erreur %}
+	<div class="panel panel-danger">
+  		<div class="panel-heading">Erreur</div>
+  		<div class="panel-body">			
+			<p class="bg-danger">{{message_erreur}}</p>		
+		</div>
+	</div>
+	{% endif %}
+
+<div class="panel panel-default">
+	<div class="panel-body">
+
+	<div class="lead text-primary">
+  		<h3><i class="fa fa-cogs" aria-hidden="true"></i> Besoins affectés au logement social</h3>
+	</div>
+	
+
+	<div class="panel panel-primary">
+		<div class="panel-heading">Choix de la part à affecter au logement social pour la brique 1.2 - Hébergé</div>  		
+		<div class="panel-body">			
+		
+		{% include 'form_input_integer.html' with type='part_b12' multi=multi_b12_ventilation param=parametre_b12_ventilation %}  	
+				
+		{% include 'validation_form.html' %}			
+		
+		</div>
+	</div>
+
+<div style="margin:15px;"></div>
+
+<div class="panel panel-primary">
+		<div class="panel-heading">Choix de la part à affecter au logement social pour la brique 1.3 - Inadéquation Financière</div>  		
+		<div class="panel-body">			
+		
+		{% include 'form_input_integer.html' with type='part_b13' multi=multi_b13_ventilation param=parametre_b13_ventilation %}  	
+				
+		{% include 'validation_form.html' %}			
+		
+		</div>
+	</div>
+
+<div style="margin:15px;"></div>
+
+<div class="panel panel-primary">
+		<div class="panel-heading">Choix de la part à affecter au logement social pour la brique 1.4 - Mauvaise Qualité</div>  		
+		<div class="panel-body">			
+		
+		{% include 'form_input_integer.html' with type='part_b14' multi=multi_b14_ventilation param=parametre_b14_ventilation %}  	
+				
+		{% include 'validation_form.html' %}			
+		
+		</div>
+	</div>
+
+<div style="margin:15px;"></div>
+
+<div class="panel panel-primary">
+		<div class="panel-heading">Choix de la part à affecter au logement social pour la brique 1.5 - Inadéquation Physique</div>  		
+		<div class="panel-body">			
+		
+		{% include 'form_input_integer.html' with type='part_b15' multi=multi_b15_ventilation param=parametre_b15_ventilation %}  	
+				
+		{% include 'validation_form.html' %}			
+		
+		</div>
+	</div>
+	
+	</div>
+</div>
+
+<div style="margin:15px;"></div>
+
+
+<div class="panel panel-default">
+	<div class="panel-body">
+
+	<div class="lead text-primary">
+  		<h3><i class="fa fa-cogs" aria-hidden="true"></i> Réallocation des logements inadéquats</h3>
+	</div>	
+	
+	<div class="panel panel-primary">
+  		<div class="panel-heading">Choix de la part des logements des ménages en inadéquation réallouables à d'autres ménages (briques 1.3 et 1.5)</div>  		
+  		<div class="panel-body">
+  		
+		{% include 'form_input_integer.html' with type='realloca' multi=multi_b1_taux_mobilite param=parametre_b1_taux_mobilite %}  	
+				
+		{% include 'validation_form.html' %}
+
+			
+		</div>
+	</div>
+	
+	</div>
+</div>
+
+<div style="margin:15px;"></div>	
+
+{% include 'validation_all_form.html' %}	
+
+{% endblock %}
+
+{% block javascript %}
+
+<script type="text/javascript">
+	
+$(function() {
+
+	{% include 'js_gestion_mono_multi.html' with type='part_b12' multi=multi_b12_ventilation %}
+	{% include 'js_gestion_mono_multi.html' with type='part_b13' multi=multi_b13_ventilation %}		
+	{% include 'js_gestion_mono_multi.html' with type='part_b14' multi=multi_b14_ventilation %}		
+	{% include 'js_gestion_mono_multi.html' with type='part_b15' multi=multi_b15_ventilation %}	
+	{% include 'js_gestion_mono_multi.html' with type='realloca' multi=multi_b1_taux_mobilite %}				
+	
+	{% include 'js_gestion_forms.html' %}
+      
+});
+	
+</script>
+{% endblock %}

@@ -1,0 +1,139 @@
+{% extends 'principal.html' %}
+{% block body %}
+
+	<div class="page-header">
+  		<h1><i class="fa fa-cubes" aria-hidden="true"></i> Evolution du parc<small> Brique 2.2</small></h1>
+	</div>
+	
+	<div class="panel panel-info">
+  		<div class="panel-heading">Préambule</div>
+  		<div class="panel-body">
+  		<p>Les besoins liés à l’évolution du parc sont définis comme les besoins liés à l’évolution tendancielle du parc hors construction neuve en volume et en structure.</p>
+  		<p>Deux phénomènes sont à l’œuvre dans l’évolution du parc :</p>
+  		<ul>
+  			<li>Le renouvellement du parc ; 
+  			<li>L’évolution de la structure du parc.
+  		</ul>
+  		<p><u>Précision méthodologique :</u></p>
+  		<p>Par défaut, les taux de disparition et de restructuration estimés via Filocom sur la période passée, sont reconduits sur la période de projection. 
+  		La reconduction des taux doit cependant être réinterrogée. </p>
+  		<p>Sur les disparitions par exemple, il faut juger le réalisme de la reconduction du taux global au vu des démolitions liées à des opérations exceptionnelles
+  		 sur le parc social (ANRU). Les taux détaillés parc privé / parc social par ZE doivent éclairer l’évaluateur dans ses choix.</p> 
+		<p>Nota : Les valeurs secrétisées (comprises entre 0 et 11 logements) sont remplacées par la valeur 5 par défaut.</p>
+		</div>
+	</div>
+	
+	{% if message_erreur %}
+	<div class="panel panel-danger">
+  		<div class="panel-heading">Erreur</div>
+  		<div class="panel-body">			
+			<p class="bg-danger">{{message_erreur}}</p>		
+		</div>
+	</div>
+	{% endif %}
+
+<div class="panel panel-default">
+	<div class="panel-body">
+
+	<div class="lead text-primary">
+  		<h3><i class="fa fa-cogs" aria-hidden="true"></i> Renouvellement du parc</h3>
+	</div>
+
+	<div class="panel panel-primary">
+  		<div class="panel-heading">Choix du taux de restructuration</div>  		
+  		<div class="panel-body">
+  			
+		{% include 'form_input_number.html' with type='restructuration' source='Filocom 2009-2015' multi=multi_restructuration param=parametre_restructuration param_info=parametre_restructuration_info %}
+		
+		{% include 'validation_form.html' %}	  	
+		
+		</div>
+	</div>
+	
+
+<div style="margin:15px;"></div>
+
+	<div class="panel panel-primary">
+  		<div class="panel-heading">Choix du taux de disparition</div>  		
+  		<div class="panel-body">
+  			
+		{% include 'form_input_number.html' with type='disparition' source='Filocom 2009-2015' multi=multi_disparition param=parametre_disparition param_info=parametre_disparition_info %}
+		
+		{% include 'validation_form.html' %}  	
+		
+		</div>
+	</div>
+	
+
+
+	</div>
+</div>		
+
+<div style="margin:15px;"></div>
+
+<div class="panel panel-default">
+	<div class="panel-body">
+
+	<div class="lead text-primary">
+  		<h3><i class="fa fa-cogs" aria-hidden="true"></i> Projection du parc</h3>
+	</div>
+
+	<div class="panel panel-primary">
+  		<div class="panel-heading">Choix du taux de vacance cible</div>  		
+  		<div class="panel-body">
+  			
+		{% include 'form_input_number.html' with type='vacance' source='Filocom 2015' multi=multi_vacance param=parametre_vacance param_info=parametre_vacance_info %} 
+		
+		{% include 'validation_form.html' %} 	
+		
+		</div>
+	</div>
+	
+
+
+<div style="margin:15px;"></div>
+
+	<div class="panel panel-primary">
+  		<div class="panel-heading">Choix du taux de résidences secondaires cible</div>  		
+  		<div class="panel-body">
+  			
+		{% include 'form_input_number.html' with type='residence_secondaire' source='Filocom 2015' multi=multi_residence_secondaire param=parametre_residence_secondaire param_info=parametre_residence_secondaire_info %}  	
+		
+		{% include 'validation_form.html' %}
+		
+		</div>
+	</div>
+	
+
+
+	</div>
+</div>		
+
+<div style="margin:15px;"></div>
+
+{% include 'validation_all_form.html' %}
+	
+{% endblock %}
+
+{% block javascript %}
+<script type="text/javascript">
+	
+$(function() {
+	
+	{% include 'js_gestion_mono_multi.html' with type='restructuration' multi=multi_restructuration %}
+	{% include 'js_gestion_mono_multi.html' with type='disparition' multi=multi_disparition %}	
+	{% include 'js_gestion_mono_multi.html' with type='vacance' multi=multi_vacance %}	
+	{% include 'js_gestion_mono_multi.html' with type='residence_secondaire' multi=multi_residence_secondaire %}		
+	
+	{% include 'js_gestion_forms.html' %}
+	
+	{% include 'js_gestion_checkbox_with_number.html' with type='restructuration' %}
+	{% include 'js_gestion_checkbox_with_number.html' with type='disparition' %}
+	{% include 'js_gestion_checkbox_with_number.html' with type='vacance' %}
+	{% include 'js_gestion_checkbox_with_number.html' with type='residence_secondaire' %}
+      
+});
+
+	
+</script>
+{% endblock %}

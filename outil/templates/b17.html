@@ -1,0 +1,67 @@
+{% extends 'principal.html' %}
+{% block body %}
+
+	<div class="page-header">
+  		<h1><i class="fa fa-cubes" aria-hidden="true"></i> Ménages dans le parc social exprimant une demande <small>Brique 1.7</small></h1>
+	</div>
+	
+	<div class="panel panel-info">
+  		<div class="panel-heading">Préambule</div>
+  		<div class="panel-body"  align="justify">
+  			<p>Des ménages actuellement logés dans le parc social peuvent présenter des besoins en logements.</p>	
+  			<p>Au sens de la méthodologie, les ménages présentant un besoin sont ceux qui, étant donné leurs caractéristiques et leurs perspectives en termes de mobilité interne au parc social, ne verront a priori pas leur demande être satisfaite à court terme. 
+  			Ces ménages sont repérés à partir du Système National d’Enregistrement (SNE).</p>	
+  		</div>
+	</div>
+	
+	{% if message_erreur %}
+	<div class="panel panel-danger">
+  		<div class="panel-heading">Erreur</div>
+  		<div class="panel-body">			
+			<p class="bg-danger">{{message_erreur}}</p>		
+		</div>
+	</div>
+	{% endif %}
+	
+<div class="panel panel-default">
+	<div class="panel-body">
+
+	<div class="lead text-primary">
+  		<h3><i class="fa fa-cogs" aria-hidden="true"></i> Demandes du parc social</h3>
+	</div>
+	
+	
+	<div class="panel panel-primary">
+  		<div class="panel-heading">Choix des motifs à exclure (donnée SNE)</div>  		
+  		<div class="panel-body">
+  		
+		{% include 'form_radio.html' with type='motif' multi=multi_motif valeurs=valeurs_motif %}  		
+		
+		{% include 'validation_form.html' %}	
+		
+		</div>
+	</div>
+	
+
+
+	</div>
+</div>
+
+<div style="margin:15px;"></div>	
+
+{% include 'validation_all_form.html' %}	
+	
+{% endblock %}
+
+{% block javascript %}
+<script type="text/javascript">
+	
+$(function() {
+	
+	{% include 'js_gestion_mono_multi.html' with type='motif' multi=multi_motif %}	
+
+    {% include 'js_gestion_forms.html' %}	     
+});
+	
+</script>
+{% endblock %}

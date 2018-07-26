@@ -1,0 +1,24 @@
+    $('input[type=checkbox][name=check-{{type}}-multi]').change(function() {
+        if (this.checked){
+            $('[name=number-{{type}}-multi]').prop('disabled', true);
+            $('[name=number-{{type}}-multi]').val(0.01);
+        }
+        else {
+            $('[name=number-{{type}}-multi]').prop('disabled', false);
+        }
+    });
+    
+    $('input[type=checkbox][name*=check-{{type}}-mono]').change(function() {
+       	code_zone = this.name.substring('check-{{type}}-mono'.length, 'check-{{type}}-mono'.length + 4);
+       	name_number = "number-{{type}}-mono" + code_zone;
+       	name_hidden = "hidden-{{type}}-mono" + code_zone;
+        if (this.checked){
+        	valeur_actuelle = $('[name='+name_hidden+']').val();
+            $('[name='+name_number+']').prop('disabled', true);
+            $('[name='+name_number+']').val(valeur_actuelle);
+        }
+        else {
+            $('[name='+name_number+']').prop('disabled', false);
+        }
+    });
+  

@@ -1,0 +1,110 @@
+{% extends 'principal.html' %}
+{% load humanize %}
+{% load formatnum_extras %}
+{% load aide %}
+{% block body %}
+
+
+<div class="page-header">
+		<h1><i class="fa fa-cubes" aria-hidden="true"></i> Classification des communes <small>Volet C</small></h1>
+</div>
+
+<div class="panel panel-info">
+  		<div class="panel-heading">Préambule</div>
+  		<div class="panel-body">
+  		<p>Les besoins totaux en production de logements sont déclinés géographiquement entre communes selon une clé de ventilation prospective.</p>
+  		<p>Dans un premier temps, les besoins sont répartis entre communes au prorata du poids des parcs de logements communaux. Sont ainsi obtenus les « besoins naïfs » communaux.</p>
+  		<p>Ensuite, la méthodologie se propose d’infléchir cette clé de répartition naïve en fonction des tendances prédites des communes en termes de destruction, de vacance, de résidences secondaires et de taille moyenne des ménages.</p>
+  		<p>Afin de mieux prédire ces tendances communales, les communes ont été classées au regard de leurs caractéristiques socio-économiques et les tendances, aussi appelées « coefficients correctifs », ont été estimées classe par classe.</p>
+  		<p>Au final, une commune se voit attribuer des besoins supérieurs aux « besoins naïfs » si la somme des coefficients correctifs est supérieure à 0 et se voit attribuer des besoins inférieurs aux « besoins naïfs » si la somme des coefficients correctifs est inférieure à 0.</p>
+		<p><br><a href="{{'classes-commune'|aide}}"  target="_blank"><i class="fa fa-question" aria-hidden="true"></i> Voir la description des classes communales</a></p>
+		</div>
+</div>
+
+<div class="panel panel-primary">
+	<div class="panel-heading">Choix de la zone d'emploi</div>  		
+	<div class="panel-body">  				
+		<form class="form-horizontal" method="post">
+		{% csrf_token %}
+			<div class="col-sm-10">
+				<select class="form-control selectpicker" name="zone_emploi">
+					<option value="0000">Sélectionnez la zone d'emploi...</option>
+				{% for parametre in parametres %}					  
+				  	<option value="{{parametre.code_ze}}"{% if parametre.code_ze == code_zone %} selected{% endif %}>{{parametre.code_ze}} - {{parametre.nom_ze}}</option>
+				{% endfor %}
+				</select>
+			</div>
+			<div class="col-sm-2">
+				<button type="submit" class="btn btn-primary" name="afficher" alt="Afficher les communes" title="Afficher les communes">
+					<i class="fa fa-search" aria-hidden="true"></i>
+				</button>
+			</div>
+		</form>	
+	</div>
+	</div>
+	
+
+
+{% if affichage_communes %}
+
+<div class="panel panel-primary">
+	<div class="panel-heading">Communes associées</div>  		
+	<div class="panel-body">
+	
+	<form class="form-horizontal" method="post">
+	{% csrf_token %}
+		{% for commune in communes_ze %}
+		<div class="form-group">			  
+	    <label for="communes" class="col-sm-2 control-label">{{commune.nom}}</label>
+	    
+	    <div class="col-sm-4">
+		   <select class="form-control selectpicker" name="epci{{commune.code}}">
+			   {% for epci in epcis %}
+		   		<option value="{{ epci.code_epci }}" {% if commune.code_epci == epci.code_epci %}selected{% endif %}>{{epci.code_epci}} - {{epci.nom_epci}}</option>
+		   	   {% endfor %}
+			</select> 
+	    </div>
+	    <div class="col-sm-6">
+		   <select class="form-control selectpicker" name="classe{{commune.code}}">
+			  <option value="1" {% if commune.classification == 1 %}selected{% endif %}>Classe 1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Vac. : {{commune.vacance1|floatformat:3}} / RS : {{commune.rs1|floatformat:3}} / Disp. : {{commune.disparition1|floatformat:3}} / Taille Mén. :  {{commune.tdm1|floatformat:3}})</option>
+			  <option value="2" {% if commune.classification == 2 %}selected{% endif %}>Classe 2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Vac. : {{commune.vacance2|floatformat:3}} / RS : {{commune.rs2|floatformat:3}} / Disp. : {{commune.disparition2|floatformat:3}} / Taille Mén. :  {{commune.tdm2|floatformat:3}})</option>
+			  <option value="3" {% if commune.classification == 3 %}selected{% endif %}>Classe 3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Vac. : {{commune.vacance3|floatformat:3}} / RS : {{commune.rs3|floatformat:3}} / Disp. : {{commune.disparition3|floatformat:3}} / Taille Mén. :  {{commune.tdm3|floatformat:3}})</option>
+			  <option value="4" {% if commune.classification == 4 %}selected{% endif %}>Classe 4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Vac. : {{commune.vacance4|floatformat:3}} / RS : {{commune.rs4|floatformat:3}} / Disp. : {{commune.disparition4|floatformat:3}} / Taille Mén. :  {{commune.tdm4|floatformat:3}})</option>
+			  <option value="5" {% if commune.classification == 5 %}selected{% endif %}>Classe 5&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Vac. : {{commune.vacance5|floatformat:3}} / RS : {{commune.rs5|floatformat:3}} / Disp. : {{commune.disparition5|floatformat:3}} / Taille Mén. :  {{commune.tdm5|floatformat:3}})</option>
+			  <option value="6" {% if commune.classification == 6 %}selected{% endif %}>Classe 6&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Vac. : {{commune.vacance6|floatformat:3}} / RS : {{commune.rs6|floatformat:3}} / Disp. : {{commune.disparition6|floatformat:3}} / Taille Mén. :  {{commune.tdm6|floatformat:3}})</option>
+			  <option value="7" {% if commune.classification == 7 %}selected{% endif %}>Classe 7&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Vac. : {{commune.vacance7|floatformat:3}} / RS : {{commune.rs7|floatformat:3}} / Disp. : {{commune.disparition7|floatformat:3}} / Taille Mén. :  {{commune.tdm7|floatformat:3}})</option>
+			</select> 
+	    </div>
+	  </div>
+		{% endfor %}
+		
+		</div>
+	</div>
+	  
+		
+		<div class="row">
+		<div class="col-sm-12">
+		
+		<div class="col-sm-6 text-right">
+		<button type="submit" class="btn btn-info" id="save_all" name="save_all" alt="Enregistrer toutes les modifications" title="Enregistrer toutes les modifications">
+			<i class="fa fa-floppy-o fa-3x" aria-hidden="true"></i>
+		</button>
+		</div>
+		<div class="col-sm-6 text-left">	
+		<a href="{% url 'outil:synthese_epci' %}" role="button" class="btn btn-info" alt="Accéder à la synthèse des résultats par EPCI" title="Accéder à la synthèse des résultats par EPCI">
+			<i class="fa fa-calculator fa-3x" aria-hidden="true"></i>
+		</a>
+		 
+</form>
+		</div>
+				
+		</div>
+	</div>
+
+	<div style="margin:15px;"></div>
+{% endif %}
+
+
+<div style="margin:15px;"></div>
+
+{% endblock %}

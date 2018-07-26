@@ -1,0 +1,26 @@
+{% extends 'principal.html' %}
+{% load staticfiles %}
+{% block body %}
+
+
+<div class="jumbotron" style="background-color: transparent !important; background:url('{% static 'img/fond_1300.png' %}') no-repeat center center; background-opacity: 0.5; min-height: 100%; min-height: 70vh; display: flex; align-items: center;">
+  <div class="container-fluid">
+  	<div style="margin:50px;"></div>
+    <h1 style="color:#d34615;" class="text-center"><b><i class="fa fa-home" aria-hidden="true"></i> Otelo</b></h1>
+    <p class="text-center">Outil pour la territorialisation de la production de logements</p>
+    <div style="margin:120px;"></div>
+  	<p class="text-center"><a class="btn btn-info btn-lg" href="{% url 'outil:brique_1_1' %}" role="button">Commencer la configuration</a></p>
+  	<div style="margin:130px;"></div>
+  </div>
+</div>
+
+<footer class="footer">
+    <div class="container">
+        <p class="text-muted">
+        <p class="text-center"><img src="{% static 'img/ministere_logo.png' %}" height="70px">&nbsp;&nbsp;<img src="{% static 'img/cerema_logo.png' %}" width="100px"></p>
+  		<p class="text-center">Version 1.2 - fév.2018</p>
+        </p>
+    </div>
+</footer>
+
+{% endblock %}

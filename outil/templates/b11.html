@@ -1,0 +1,165 @@
+{% extends 'principal.html' %}
+{% block body %}
+{% load aide %}
+
+	<div class="page-header">
+  		<h1><i class="fa fa-cubes" aria-hidden="true"></i> Ménages vivant hors logement <small>Brique 1.1</small></h1>
+	</div>
+	
+	<div class="panel panel-info">
+  		<div class="panel-heading">Préambule</div>
+  		<div class="panel-body"  align="justify">
+  			<p>
+  			Les personnes vivant hors logement correspondent à la population dite « sans domicile » :
+  			</p>
+  			<ul>
+				<li>Les personnes sans abris, en habitations de fortune ou logées à l’hôtel ;<br>
+  			    <li>Les personnes accueillies dans les structures d’hébergement social.
+  			</ul>
+  			<p><b>SANS ABRIS, HABITATIONS DE FORTUNE ET LOGES A L’HOTEL</b> </p>
+  			
+			<p><u>Précision méthodologique sur les sources :</u></p>
+				<p>L’INSEE identifie les sans-abris par zone d’emploi via le fichier détail «Individus» du recensement : à chaque individu correspond un ménage potentiel par défaut.
+				Les ménages logés dans des habitations de fortune et dans des chambres d’hôtel sont recensés dans le fichier détail « Logements ».</p>
+			    <p>Le Système National d’Enregistrement (SNE) indique directement le nombre de ménages demandant un logement social et déclarant les modes de logement actuels suivants : 
+			    « Sans-abri ou habitat de fortune », « Dans un squat », « Camping, caravaning » et « Logé dans un hôtel ».</p>
+
+			<p><b>HEBERGEMENT SOCIAL</b></p>
+				<p>Il est conseillé de procéder à un choix critique et normatif des publics considérés comme étant en situation de besoin en logement car tous les ménages logés dans ces structures 
+				d'hébergement n'ont pas vocation à occuper un logement de droit commun à long terme.</p>
+				<p><u>Précision méthodologique sur les sources :</u></p>
+				<p>Le répertoire FINESS permet de connaître la capacité d’accueil en nombre de places des établissements d’hébergement social.</p>
+				<p>L’enquête Établissements et services (ES) « difficulté sociale » dont les résultats sont publiés sur le site de la Direction de la recherche, des études, de 
+				l’évaluation et des statistiques (Drees), mesure en complément les ratios d’occupation par type d’établissement au niveau régional, 
+				ce qui permet d’estimer le nombre d’occupants de chacune des structures de FINESS.</p>
+			<p><br><a href="{{'etab-finess'|aide}}"  target="_blank"><i class="fa fa-question" aria-hidden="true"></i> Voir la description des établissements FINESS</a></p>
+		
+		</div>
+	</div>
+	
+	{% if message_erreur %}
+	<div class="panel panel-danger">
+  		<div class="panel-heading">Erreur</div>
+  		<div class="panel-body">			
+			<p class="bg-danger">{{message_erreur}}</p>		
+		</div>
+	</div>
+	{% endif %}
+
+<div class="panel panel-default">
+	<div class="panel-body">
+
+	<div class="lead text-primary">
+  		<h3><i class="fa fa-cogs" aria-hidden="true"></i> Sans abris - Habitations de fortune - Logés à l'hôtel</h3>
+	</div>
+	
+	<div class="panel panel-primary">
+  		<div class="panel-heading">Choix de la source de données</div>  		
+  		<div class="panel-body">
+  		
+  		{% include 'form_radio.html' with type='source' multi=multi_source valeurs=valeurs_source %} 
+  		
+  		{% include 'validation_form.html' %} 			
+		</div>
+	</div>
+	
+	
+
+<div style="margin:15px;"></div>	
+	
+	<div class="panel panel-primary">
+		<div class="panel-heading">Choix des catégories prises en compte</div>  		
+		<div class="panel-body">			
+		
+		{% include 'form_checkbox.html' with type='critere' multi=multi_critere valeurs=valeurs_critere autre_valeur='autre_source_b11'%} 
+		
+		{% include 'validation_form.html' %}
+			
+		
+		</div>
+	</div>
+	
+
+
+	</div>
+</div>			
+
+<div style="margin:15px;"></div>
+
+
+<div class="panel panel-default">
+	<div class="panel-body">	
+
+	<div class="lead text-primary">
+  		<h3><i class="fa fa-cogs" aria-hidden="true"></i> Hébergement social</h3>
+	</div>
+
+	<div class="panel panel-primary">
+  		<div class="panel-heading">
+  			Choix des catégories d'établissement prises en compte (données Finess)
+  			<span class="fa-stack fa-lg" data-toggle="popover" data-placement="bottom" title="Détail des types d'hébergements" 
+  			data-html="True"
+  			data-content="<b>Aire nomade :</b> Aires station nomades<br>
+  						<b>CADA :</b> Centres d’Accueil de Demandeurs d’Asile<br>
+  						<b>CHRS :</b> Centres d'Hébergement et de Réinsertion Sociale <br>
+  						<b>CPH :</b> Centres Provisoires d’Hébergement<br>
+  						<b>Foyer jeunes travailleurs :</b> Foyers de jeunes travailleurs non transformés en résidences sociales<br>
+  						<b>Foyer travailleurs migrants :</b> Foyers de travailleurs migrants non transformés en résidences sociales<br>
+  						<b>Hébergement fam. malades :</b> Structures d'hébergement pour les familles de malades<br>
+  						<b>Maisons relais-pension :</b> Maisons relais ou pensions de famille<br>
+  						<b>Résidence sociale hors maisons relais :</b> Résidences sociales hors maisons relais ou pensions de famille"
+  			data-template='<div class="popover" role="tooltip"><div class="arrow"></div><h3 style="color:#e95420;" class="popover-title"></h3><div style="color:#333333;" class="popover-content"></div></div>'>
+  				<i class="fa fa-circle fa-stack-2x text-success"></i>
+ 				 <i class="fa fa-question fa-stack-1x fa-inverse"></i>
+			</span>
+  		</div>  		
+  		<div class="panel-body">
+  			
+		{% include 'form_select.html' with type='etablissement' multi=multi_etablissement valeurs=valeurs_etablissement param=parametre_etablissement choix_multiple=True %}  	
+		
+		{% include 'validation_form.html' %}
+		
+		</div>
+	</div>
+
+<div style="margin:15px;"></div>
+
+
+	<div class="panel panel-primary">
+  		<div class="panel-heading">Choix de la part du public présent dans les établissements d'hébergement social en situation de besoin en logement</div>  		
+  		<div class="panel-body">
+  		
+		{% include 'form_input_integer.html' with type='taux_etablissement' multi=multi_taux_etablissement param=parametre_taux_etablissement %}  	
+				
+		{% include 'validation_form.html' %}
+			
+		</div>
+	</div>
+
+
+	</div>
+</div>	
+
+<div style="margin:15px;"></div>
+
+{% include 'validation_all_form.html' %}	
+	
+	
+{% endblock %}
+
+{% block javascript %}
+<script type="text/javascript">
+	
+$(function() {
+	
+	{% include 'js_gestion_mono_multi.html' with type='source' multi=multi_source %}	
+	{% include 'js_gestion_mono_multi.html' with type='critere' multi=multi_critere %}	
+    {% include 'js_gestion_mono_multi.html' with type='etablissement' multi=multi_etablissement %}
+    {% include 'js_gestion_mono_multi.html' with type='taux_etablissement' multi=multi_taux_etablissement %}
+    
+    {% include 'js_gestion_forms.html' %}
+    	
+});
+	
+</script>
+{% endblock %}

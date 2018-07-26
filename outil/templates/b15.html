@@ -1,0 +1,81 @@
+{% extends 'principal.html' %}
+{% block body %}
+
+	<div class="page-header">
+  		<h1><i class="fa fa-cubes" aria-hidden="true"></i> Ménages en inadéquation physique<small> Brique 1.5</small></h1>
+	</div>
+	
+	<div class="panel panel-info">
+  		<div class="panel-heading">Préambule</div>
+  		<div class="panel-body"  align="justify">
+			<p>L’inadéquation physique des ménages avec leur logement est ici envisagée sous l’angle du surpeuplement (ou de la sur-occupation) sur le parc privé. </p>
+			<p><u>Précision méthodologique sur les sources :</u></p>
+			<p>La définition de l’INSEE du surpeuplement modéré ou accentué est basée sur le nombre de pièces du logement, le nombre de personnes du ménage, leur âge et leur sexe.</p>
+<p>La définition de Filocom de la sur-occupation légère ou lourde fait intervenir la surface du logement et le nombre de personnes du ménage.</p>
+<p>La population des ménages en situation de surpeuplement accentué (resp. de sur-occupation lourde) est une sous-population des ménages en situation de surpeuplement modéré (resp. de sur-occupation légère).</p>
+		</div>
+	</div>
+	
+	{% if message_erreur %}
+	<div class="panel panel-danger">
+  		<div class="panel-heading">Erreur</div>
+  		<div class="panel-body">			
+			<p class="bg-danger">{{message_erreur}}</p>		
+		</div>
+	</div>
+	{% endif %}
+	
+<div class="panel panel-default">
+	<div class="panel-body">
+
+	<div class="lead text-primary">
+  		<h3><i class="fa fa-cogs" aria-hidden="true"></i> Inadéquation Physique</h3>
+	</div>
+
+	<div class="panel panel-primary">
+  		<div class="panel-heading">Choix de la source de données et du niveau de suroccupation</div>  		
+  		<div class="panel-body">
+  			
+  		{% include 'form_radio.html' with type='source' multi=multi_source valeurs=valeurs_source %}
+  		
+  		{% include 'validation_form.html' %}
+		
+		</div>
+	</div>
+		
+
+<div style="margin:15px;"></div>	
+	
+	<div class="panel panel-primary">
+		<div class="panel-heading">Choix des catégories prises en compte</div>  		
+		<div class="panel-body">			
+		
+		{% include 'form_checkbox.html' with type='categorie' multi=multi_categorie valeurs=valeurs_categorie autre_valeur=None %}
+		
+		{% include 'validation_form.html' %}  	
+	
+		</div>
+	</div>
+
+	</div>
+</div>
+
+<div style="margin:15px;"></div>
+
+{% include 'validation_all_form.html' %}		
+	
+{% endblock %}
+
+{% block javascript %}
+<script type="text/javascript">
+	
+$(function() {
+	
+	{% include 'js_gestion_mono_multi.html' with type='source' multi=multi_source %}	
+	{% include 'js_gestion_mono_multi.html' with type='categorie' multi=multi_categorie %}	
+
+    {% include 'js_gestion_forms.html' %}	  
+});
+	
+</script>
+{% endblock %}

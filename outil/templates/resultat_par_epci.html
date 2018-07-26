@@ -1,0 +1,109 @@
+{% extends 'principal.html' %}
+{% load humanize %}
+{% load formatnum_extras %}
+{% block body %}
+
+
+<div class="page-header">
+		<h1><i class="fa fa-calculator" aria-hidden="true"></i> Résultat sur un EPCI <small>Détail</small></h1>
+</div>
+
+<div class="panel panel-primary">
+	<div class="panel-heading">Choix des EPCI</div>  		
+	<div class="panel-body">  				
+		<form class="form-horizontal" method="post">
+		{% csrf_token %}
+			<div class="col-sm-10">
+				<select class="form-control selectpicker" name="epci">
+					<option value="0000">Sélectionnez un EPCI...</option>
+				{% for epci in epcis %}					  
+				  	<option value="{{epci.code_epci}}"{% if epci.code_epci == code_epci %} selected{% endif %}>{{epci.code_epci}} - {{epci.nom_epci}}</option>
+				{% endfor %}
+				</select>
+			</div>
+			<div class="col-sm-2">
+				<button type="submit" class="btn btn-primary" name="afficher" alt="Afficher les résultats" title="Afficher les résultats">
+					<i class="fa fa-search" aria-hidden="true"></i>
+				</button>
+			</div>
+		</form>	
+	</div>
+	</div>
+	
+
+
+{% if affichage_resultat %}
+
+<div class="panel panel-primary">
+	<div class="panel-heading">C. Besoins pour {{resultat.nom_epci}} ({{resultat.departements}})</div>  		
+	<div class="panel-body">
+	
+	<table class="table table-bordered">
+		<thead>
+			<tr align=center>	
+				<th width=30%><p></p></th>
+				<th><p align="center">Besoins après application des coefficients correctifs sur 1 an</p></th>
+				<th><p align="center">Besoins après application des coefficients correctifs sur 6 ans</p></th>
+				<th><p align="center">Besoins "naïfs" sur 6 ans 
+				<span class="fa-stack" data-toggle="popover" data-placement="bottom" title="Besoins naïfs" 
+	  			data-html="True"
+	  			data-content="Les « besoins naïfs » intercommunaux correspondent à la somme des «besoins naïfs» communaux.<br/>Ces derniers sont 
+	  			obtenus en répartissant les besoins de la zone d'emploi entre les communes la composant au prorata du poids des parcs de logements communaux."
+	  			data-template='<div class="popover" role="tooltip"><div class="arrow"></div><h3 style="color:#e95420;" class="popover-title"></h3><div style="color:#333333;" class="popover-content"></div></div>'>
+	  				<i class="fa fa-circle fa-stack-2x text-success"></i>
+	 				 <i class="fa fa-question fa-stack-1x fa-inverse"></i>
+				</span>
+				</p></th>
+			</tr>
+		</thead>
+		<tbody>
+				<tr>
+					<td><b>Besoins totaux en production de logements</b></td>
+					<td class="text-right">{{resultat.besoin_en_logement_final_1an|intcomma}}</td>
+					<td class="text-right">{{resultat.besoin_en_logement_final|intcomma}}</td>
+					<td class="text-right">{{resultat.besoin_en_logement_naif_final|intcomma}}</td>
+				</tr>
+		</tbody>
+	</table>
+	
+	</div>
+</div>
+
+ 
+<div class="panel panel-primary">
+	<div class="panel-heading">Communes concernées sur {{resultat.nom_epci}} ({{resultat.departements}})</div>  		
+	<div class="panel-body">
+	
+	<table class="table table-bordered">
+		<thead>
+			<tr align=center>	
+				<th width=5%><p align="center">Code</p></th>
+				<th width=35%><p align="center">Nom</p></th>
+				<th><p align="center">Classe</p></th>
+				<th><p align="center">Coef. Vacance</p></th>
+				<th><p align="center">Coef. RS</p></th>
+				<th><p align="center">Coef. Disparitions</p></th>
+				<th><p align="center">Coef. Taille moyenne ménage</p></th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for commune in communes %}
+				<tr>
+					<td>{{commune.code}}</td>
+					<td><b>{{commune.nom}}</b></td>
+					<td class="text-right"><b>{{commune.classification }}</b></td>
+					<td class="text-right">{{commune.coeff_vacance|floatformat:3}}</td>
+					<td class="text-right">{{commune.coeff_rs|floatformat:3}}</td>
+					<td class="text-right">{{commune.coeff_disparition|floatformat:3}}</td>
+					<td class="text-right">{{commune.coeff_tdm|floatformat:3}}</td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	
+	</div>
+</div> 
+  
+{% endif %}
+
+{% endblock %}

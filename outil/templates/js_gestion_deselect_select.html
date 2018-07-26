@@ -1,0 +1,11 @@
+$("#deselectionner").click(function(e){
+	e.preventDefault();
+	$('.selectpicker').selectpicker('deselectAll');	
+});
+      
+$("#selectionner").click(function(e){
+	e.preventDefault();
+	$('.selectpicker').selectpicker('selectAll');
+	$('.selectpicker').find('[value="0000"]').prop('selected', false);
+	$('.selectpicker').selectpicker('refresh');
+});

@@ -1,0 +1,85 @@
+{% extends 'principal.html' %}
+{% block body %}
+
+	<div class="page-header">
+  		<h1><i class="fa fa-cubes" aria-hidden="true"></i> Evolutions démographiques<small> Brique 2.1</small></h1>
+	</div>
+	
+	<div class="panel panel-info">
+  		<div class="panel-heading">Préambule</div>
+  		<div class="panel-body">
+	  		<p>Les besoins liés aux évolutions démographiques sont définis comme les besoins liés à l’apparition ou la disparition de ménages sur le territoire.</p>
+	  		<p>Trois phénomènes sont à l’œuvre dans l’évolution du nombre de ménages :</p>
+	  		<ul>
+  				<li>L’accroissement naturel de la population ;
+  				<li>Le solde migratoire de la population ;
+  				<li>Le desserrement des ménages.
+  			</ul>
+  			<p><u>Précision méthodologique sur les sources :</u></p>
+	  		<p>Pour les zones de plus de 50 000 habitants, l’INSEE produit des projections démographiques à partir du recensement.</p>
+	  		<p>Six scenarios d’évolution du nombre de ménages sont proposés à l’évaluateur :</p>
+			<ul>
+  				<li>le scenario « central » d’évolution de la population combiné au scenario « tendanciel » de cohabitation ;
+				<li>le scenario « central » d’évolution de la population combiné au scenario « maintien » de cohabitation ;
+				<li>le scenario « central » d’évolution de la population combiné au scenario « accélération » de cohabitation ;
+				<li>le scenario « central » d’évolution de la population combiné au scenario « décélération » de cohabitation ;
+				<li>le scénario « population haute » d’évolution de la population combiné au scenario « tendanciel » de cohabitation ;
+				<li>le scénario « population basse » d’évolution de la population combiné au scenario « tendanciel » de cohabitation.
+			</ul>
+			<p>Par défaut, l’évolution projetée du nombre de ménages du scenario « central » d’évolution de la population combiné au scenario « tendanciel » de cohabitation est indiquée.</p>
+			<p> Pour les zones  de moins de 50 000 habitants, l’INSEE ne produit pas de telles projections démographiques. 
+			C’est l’évolution passée du nombre de ménages d’après le recensement qui est proposée en valeur par défaut.</p>
+			
+		</div>
+	</div>
+	
+	{% if message_erreur %}
+	<div class="panel panel-danger">
+  		<div class="panel-heading">Erreur</div>
+  		<div class="panel-body">			
+			<p class="bg-danger">{{message_erreur}}</p>		
+		</div>
+	</div>
+	{% endif %}
+
+<div class="panel panel-default">
+	<div class="panel-body">
+
+	<div class="lead text-primary">
+  		<h3><i class="fa fa-cogs" aria-hidden="true"></i> Evolutions démographiques</h3>
+	</div>
+
+	<div class="panel panel-primary">
+  		<div class="panel-heading">Choix de la projection démographique (donnée Omphale)</div>  		
+  		<div class="panel-body">
+  			
+		{% include 'form_select_omphale.html' with type='scenario' multi=multi_scenario valeurs=valeurs_scenario param=parametre_scenario %}  	
+	
+		{% include 'validation_form.html' %}	
+		
+		</div>
+	</div>
+	
+
+
+	</div>
+</div>
+
+<div style="margin:15px;"></div>	
+
+{% include 'validation_all_form.html' %}		
+	
+{% endblock %}
+
+{% block javascript %}
+<script type="text/javascript">
+	
+$(function() {
+	
+	{% include 'js_gestion_mono_multi.html' with type='scenario' multi=multi_scenario %}		
+    
+    {% include 'js_gestion_forms.html' %}	   
+});
+	
+</script>
+{% endblock %}

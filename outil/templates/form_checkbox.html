@@ -1,0 +1,55 @@
+{% load getattr %}
+
+
+<form class="form-horizontal" method="post">
+		{% csrf_token %} 
+		
+		 <div class="form-group">
+		  <label class="radio-inline col-sm-11 col-sm-offset-1">
+		   <input type="radio" name="choix-{{type}}-mono-multi" value="multi" {% if multi %} checked="checked"{% endif %}> Appliquer un choix à toutes les zones d'emploi
+		  </label>		 	  
+		 </div>
+		 
+		 <div class="form-group multi-{{type}}-ze">			  
+		    <label for="inputEmail3" class="col-sm-3 control-label">Toutes zones d'emploi</label>
+		    <div class="col-sm-9">
+		    	{% for valeur in valeurs %}
+				<div class="row">
+		    	<div class="col-sm-12"> 
+		    	{%if autre_valeur and not forloop.last or not autre_valeur %}
+			    <label class="checkbox-inline">
+		  		<input type="checkbox" name="multi-{{type}}-ze-{{valeur.0}}" {% if multi and parametres.0|getattr:valeur.2 == valeur.3 or not multi %} checked="checked"{% endif %}> {{valeur.1}}
+			    </label>
+			    {% endif %}
+			    </div>
+		    	</div>
+			    {% endfor %}
+		    </div>
+		  </div>
+		 
+		 <div class="form-group">
+		  <label class="radio-inline col-sm-11 col-sm-offset-1">
+		   <input type="radio" name="choix-{{type}}-mono-multi" value="mono" {% if not multi %} checked="checked"{% endif %}> Appliquer un choix par zone d'emploi
+		  </label>		 	  
+		 </div>
+		 
+		 {% for parametre in parametres %}
+		  <div class="form-group mono-{{type}}-ze">			  
+		    <label for="inputEmail3" class="col-sm-3 control-label">{{parametre.nom_ze}} ({{parametre.code_ze}})</label>
+		    <div class="col-sm-9">
+		    	{% for valeur in valeurs %}
+		    	<div class="row">
+		    	<div class="col-sm-12"> 
+		  		<label class="checkbox-inline{% if forloop.last and autre_valeur %} form-inline{% endif %}">
+		  		<input type="checkbox" name="mono-{{type}}-ze-{{valeur.0}}{{parametre.code_ze}}" {% if parametre|getattr:valeur.2 %} checked="checked"{% endif %}> {{valeur.1}}
+			    {% if forloop.last and autre_valeur %}<input type="text" value="{{parametre|getattr:autre_valeur}}" name="data{{parametre.code_ze}}" class="form-control" size="5">{% endif %}
+			    </label>
+			    </div>
+		    	</div>
+			    {% endfor %}
+		    </div>
+		  </div>
+		  {% endfor %}
+		  
+<!-- attente barre validation -->	  
+		  

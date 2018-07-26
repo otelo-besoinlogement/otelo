@@ -1,0 +1,66 @@
+{% load aide %}
+<!-- Static navbar -->
+    <nav class="navbar navbar-default navbar-static-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button><a class="navbar-brand" href="{% url 'outil:accueil' %}"><i class="fa fa-home" aria-hidden="true"></i> Otelo</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li class="dropdown">
+		    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class="fa fa-sliders"></i> Configuration <span class="caret"></span></a>
+              <ul class="dropdown-menu">
+                <li class="dropdown-header">Configuration générale</li>
+                <li><a href="{% url 'outil:initialisation' %}">Réinitialiser les paramètres (volet B)</a></li>
+                <li><a href="{% url 'outil:initialisation_classe' %}">Réinitialiser les classes communales (volet C)</a></li>
+                <li><a href="{% url 'outil:initialisation_commune' %}">Réinitialiser les communes/EPCI (volet C)</a></li>
+                <li><a href="{% url 'outil:sauvegarde' %}">Sauvegarder configuration</a></li>
+                <li><a href="{% url 'outil:chargement' %}">Charger configuration</a></li>
+                <li role="separator" class="divider"></li>
+                <li class="dropdown-header">B1 - Besoin en stock</li>
+                <li><a href="{% url 'outil:brique_1_1' %}">1.1 - Hors Logement</a></li>
+                <li><a href="{% url 'outil:brique_1_2' %}">1.2 - Hébergé</a></li>
+                <li><a href="{% url 'outil:brique_1_3' %}">1.3 - Inadéquation Financière</a></li>
+                <li><a href="{% url 'outil:brique_1_4' %}">1.4 - Mauvaise Qualité</a></li>
+                <li><a href="{% url 'outil:brique_1_5' %}">1.5 - Inadéquation Physique</a></li>
+                <li><a href="{% url 'outil:brique_1_6' %}">1.6 - Retraitement des besoins cumulés</a></li>
+                <li><a href="{% url 'outil:brique_1_7' %}">1.7 - Parc Social</a></li>
+                <li><a href="{% url 'outil:voletB1_ventilation' %}">Ventilation des besoins</a></li>
+                <li><a href="{% url 'outil:voletB_resorption' %}">Horizon de résorption</a></li>
+                <li role="separator" class="divider"></li>
+                <li class="dropdown-header">B2 - Besoin en flux</li>
+                <li><a href="{% url 'outil:brique_2_1' %}">2.1 - Evolution démographique</a></li>
+                <li><a href="{% url 'outil:brique_2_2' %}">2.2 - Evolution du parc</a></li>
+                <li role="separator" class="divider"></li>
+                <li class="dropdown-header">C - Ventilation des besoins à la maille de restitution</li>
+                <li><a href="{% url 'outil:classe_commune' %}">Classification des communes</a></li>
+                
+                
+              </ul>
+            </li>
+	    <li class="dropdown">
+		    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"><i class="fa fa-calculator"></i> Résultats <span class="caret"></span></a>
+		    <ul class="dropdown-menu">
+		    	<li class="dropdown-header">B3. Synthèse des besoins (avant volet C)</li>
+			    <li><a href="{% url 'outil:resultat_par_ze' %}">Sur une zone d'emploi</a></li>
+			    <li><a href="{% url 'outil:synthese_ze' %}">Sur plusieurs zones d'emploi</a></li>
+			    <li><a href="{% url 'outil:export_ze' %}">Export des zones d'emploi</a></li>
+			    <li role="separator" class="divider"></li>
+			    <li class="dropdown-header">C. Synthèse des besoins (après volet C)</li>
+			    <li><a href="{% url 'outil:resultat_par_epci' %}">Sur un EPCI</a></li>
+			    <li><a href="{% url 'outil:synthese_epci' %}">Sur plusieurs EPCI</a></li>
+			    <li><a href="{% url 'outil:export_epci' %}">Export des EPCI</a></li>
+		    </ul>
+	    </li>
+          </ul>
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="{{request.path|aide}}" target="_blank">Aide</a></li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </nav>

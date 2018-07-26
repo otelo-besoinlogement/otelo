@@ -1,0 +1,73 @@
+{% extends 'principal.html' %}
+{% block body %}
+
+	<div class="page-header">
+  		<h1><i class="fa fa-cubes" aria-hidden="true"></i> Horizon de résorption des besoins en stock<small> Volet B1</small></h1>
+	</div>
+	
+	<div class="panel panel-info">
+  		<div class="panel-heading">Préambule</div>
+  		<div class="panel-body">
+  		<p>Les besoins en stock sont issus d’un constat sur la situation des ménages à l’instant présent. Par essence, ils ne sont pas définis sur une période particulière. 
+  		C’est à l’évaluateur de fixer le rythme de résorption de ces besoins.</p>
+		</div>
+	</div>
+	
+	{% if message_erreur %}
+	<div class="panel panel-danger">
+  		<div class="panel-heading">Erreur</div>
+  		<div class="panel-body">			
+			<p class="bg-danger">{{message_erreur}}</p>		
+		</div>
+	</div>
+	{% endif %}
+
+<div class="panel panel-default">
+	<div class="panel-body">
+
+	<div class="lead text-primary">
+  		<h3><i class="fa fa-cogs" aria-hidden="true"></i> Horizon de résorption</h3>
+	</div>
+
+	<div class="panel panel-primary">
+  		<div class="panel-heading">Horizon de résorption en années</div>  		
+  		<div class="panel-body">
+  		
+		<form class="form-inline" method="post">
+		{% csrf_token %}
+		<div class="col-sm-12 form-group">
+			<label for="resorption">Horizon 
+			<div class="input-group">
+		  		<input type="number" value="{{parametres.0.horizon_resorption}}" min="0" max="40" class="form-control" name="horizon"><div class="input-group-addon">ans</div>
+		  	</div>
+		  	</label>	 	  
+		 </div>
+		 
+	</form>	
+		  
+		</div>
+	</div>
+	
+	</div>
+</div>
+	
+
+
+<div style="margin:15px;"></div>	
+
+{% include 'validation_all_form.html' %}	
+
+{% endblock %}
+
+{% block javascript %}
+
+<script type="text/javascript">
+	
+$(function() {	
+	
+	{% include 'js_gestion_forms.html' %}
+      
+});
+	
+</script>
+{% endblock %}

@@ -1,0 +1,21 @@
+	{% if multi %}
+        $('.multi-{{type}}-ze').show();
+        $('.mono-{{type}}-ze').hide();
+    {% else %}
+    	$('.mono-{{type}}-ze').show();
+        $('.multi-{{type}}-ze').hide();
+    {% endif %}
+    
+
+    $('input[type=radio][name=choix-{{type}}-mono-multi]').change(function() {
+        if (this.value == 'multi') {
+            $('.multi-{{type}}-ze').show();
+            $('.mono-{{type}}-ze').hide();
+        }
+        else if (this.value == 'mono') {
+        	$('.mono-{{type}}-ze').show();
+            $('.multi-{{type}}-ze').hide();
+        }
+    });
+    
+  

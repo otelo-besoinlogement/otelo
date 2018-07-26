@@ -1,0 +1,23 @@
+$("#save_all").click(function(){
+		valuesToSend = '';
+		action = null;
+		methode = null;
+        $("form").each(function(){
+            valuesToSend += '&' + $(this).serialize();
+            action = $(this).attr('action');
+            methode = $(this).attr('method');            
+        });
+        $.ajax(
+        		action,
+                {
+                method: methode,
+                data: valuesToSend,
+                success: function(){window.location.href = window.location.href;}
+                }
+            )
+    });
+    
+$(document).on({
+    ajaxStart: function() { $("body").css("cursor", "wait");},
+     ajaxStop: function() { $("body").css("cursor", "default");}    
+});

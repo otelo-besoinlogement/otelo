@@ -1,0 +1,37 @@
+{% load getattr %}
+
+<form class="form-horizontal" method="post">
+	{% csrf_token %} 
+	
+	
+	<div class="form-group">
+	  <label class="radio-inline col-sm-11 col-sm-offset-1">
+	   <input type="radio" name="choix-{{type}}-mono-multi" value="multi" {% if multi %}checked="checked"{% endif %}> Appliquer un choix à toutes les zones d'emploi
+	  </label>		 	  
+	 </div>
+	
+	<div class="form-inline multi-{{type}}-ze">
+		<label class="col-sm-4 control-label">Toutes zones d'emploi</label>
+		<div class="input-group col-sm-3">
+	  		<input type="number" min="0" max="100" class="form-control" name="number-{{type}}-multi" value="{{ parametres.0|getattr:param }}"><div class="input-group-addon">%</div>
+	  	</div>	 	  
+	</div>  
+	 	 
+	 <div class="form-group">
+	  <label class="radio-inline col-sm-11 col-sm-offset-1">
+	   <input type="radio" name="choix-{{type}}-mono-multi" value="mono" {% if not multi %}checked="checked"{% endif %}> Appliquer un choix par zone d'emploi
+	  </label>		 	  
+	 </div>
+	 
+	 {% for parametre in parametres %}
+	 
+	 <div class="form-inline mono-{{type}}-ze">
+			<label class="col-sm-4 control-label">{{parametre.nom_ze}} ({{parametre.code_ze}})</label>
+			<div class="col-sm-3 input-group">
+				<input type="number" min="0" max="100" value="{{ parametre|getattr:param }}" class="form-control" name="number-{{type}}-mono{{parametre.code_ze}}"><div class="input-group-addon">%</div>
+		  	</div>	  	
+	</div> 
+	  
+	  {% endfor %}
+	  
+<!-- attente barre validation -->

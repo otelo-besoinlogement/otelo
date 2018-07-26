@@ -1,0 +1,43 @@
+{% load getattr %}
+
+<form class="form-horizontal" method="post">
+	{% csrf_token %} 
+	
+	
+	<div class="form-group">
+	  <label class="radio-inline col-sm-11 col-sm-offset-1">
+	   <input type="radio" name="choix-{{type}}-mono-multi" value="multi" {% if multi %} checked="checked"{% endif %}> Appliquer un choix à toutes les zones d'emploi
+	  </label>		 	  
+	 </div>
+	 
+	 <div class="form-group multi-{{type}}-ze">			  
+	    <label for="inputEmail3" class="col-sm-3 control-label">Toutes zones d'emploi</label>
+	    <div class="col-sm-9">
+		   <select class="form-control selectpicker" name="{{type}}-multi"{% if choix_multiple %} multiple{% endif %}>
+		   	{% for valeur in valeurs %}
+			  <option value="{{valeur.0}}" {% if choix_multiple and valeur.0 in parametres.0|getattr:param or parametres.0|getattr:param == valeur.0 %}selected{% endif %}>{{valeur.1}}</option>
+			{% endfor %}
+			</select> 
+	    </div>
+	  </div>
+	 
+	 <div class="form-group">
+	  <label class="radio-inline col-sm-11 col-sm-offset-1">
+	   <input type="radio" name="choix-{{type}}-mono-multi" value="mono" {% if not multi %} checked="checked"{% endif %}> Appliquer un choix par zone d'emploi
+	  </label>		 	  
+	 </div>
+	 
+	 {% for parametre in parametres %}
+	  <div class="form-group mono-{{type}}-ze">			  
+	    <label for="inputEmail3" class="col-sm-3 control-label">{{parametre.nom_ze}} ({{parametre.code_ze}})</label>
+	    <div class="col-sm-9">
+		    <select class="form-control selectpicker" name="{{type}}-mono{{parametre.code_ze}}"{% if choix_multiple %} multiple{% endif %}>
+		    {% for valeur in valeurs %}
+			  <option value="{{valeur.0}}" {% if choix_multiple and valeur.0 in parametre|getattr:param or parametre|getattr:param == valeur.0  %}selected{% endif %}>{{valeur.1}}</option>
+			{% endfor %}
+			</select> 
+	    </div>
+	  </div>
+	  {% endfor %}
+	  
+<!-- attente barre validation -->

@@ -1,0 +1,83 @@
+{% extends 'principal.html' %}
+{% block body %}
+
+	<div class="page-header">
+  		<h1><i class="fa fa-cubes" aria-hidden="true"></i> Ménages en inadéquation financière<small> Brique 1.3</small></h1>
+	</div>
+	
+	<div class="panel panel-info">
+  		<div class="panel-heading">Préambule</div>
+  		<div class="panel-body"  align="justify">
+  		<p>Les ménages en inadéquation financière avec leur logement se définissent comme les ménages qui occupent un logement au sein du parc privé et dont le coût se révèle inadapté aux ressources dont ils disposent.</p>
+  		<p>Les ménages en situation de besoin sont ceux dont le taux d’effort net des aides au logement est supérieur au seuil maximal acceptable fixé par l’évaluateur.</p>
+  		</div>
+	</div>
+	
+	{% if message_erreur %}
+	<div class="panel panel-danger">
+  		<div class="panel-heading">Erreur</div>
+  		<div class="panel-body">			
+			<p class="bg-danger">{{message_erreur}}</p>		
+		</div>
+	</div>
+	{% endif %}
+	
+<div class="panel panel-default">
+	<div class="panel-body">
+  		
+			<div class="lead text-primary">
+  				<h3><i class="fa fa-cogs" aria-hidden="true"></i> Inadéquation financière</h3>
+			</div>
+		
+
+	<div class="panel panel-primary">
+  		<div class="panel-heading">Choix du taux d'effort net maximal (donnée CNAF)</div>  		
+  		<div class="panel-body">
+  			
+		{% include 'form_select.html' with type='taux' multi=multi_taux valeurs=valeurs_taux param=parametre_taux %}
+		
+		{% include 'validation_form.html' %}  	
+		
+		</div>
+	</div>
+	
+	
+
+<div style="margin:15px;"></div>	
+	
+	<div class="panel panel-primary">
+		<div class="panel-heading">Choix des catégories prises en compte (donnée CNAF)</div>  		
+		<div class="panel-body">			
+		
+		{% include 'form_checkbox.html' with type='categorie' multi=multi_categorie valeurs=valeurs_categorie autre_valeur=None %}  	
+	
+		{% include 'validation_form.html' %}
+	
+		</div>
+	</div>
+
+
+
+	</div>
+</div>
+
+<div style="margin:15px;"></div>
+
+{% include 'validation_all_form.html' %}			
+	
+{% endblock %}
+
+{% block javascript %}
+<script type="text/javascript">
+	
+$(function() {
+	
+	{% include 'js_gestion_mono_multi.html' with type='taux' multi=multi_taux %}	
+	{% include 'js_gestion_mono_multi.html' with type='categorie' multi=multi_categorie %}	
+	
+	{% include 'js_gestion_forms.html' %}	
+      
+});
+	
+</script>
+{% endblock %}
